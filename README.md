@@ -1,14 +1,8 @@
 # Tea
-
----
-
 个人工作台项目，就是将自己工作用的一些功能，集合到一起作为一个项目进行统一使用，包括db处理，日志处理，还有其他各种各样的处理，方便自己平常工作中使用
 地址：[https://github.com/SimonAlong/tea](https://github.com/SimonAlong/tea)
 
 # Getting started
-
----
-
 ### 1.本地使用
 * #### <a name="ir7phf"></a>在~/.bash\_profile 里面添加
 ```plain
@@ -28,9 +22,6 @@ brew install tea
 目前这种暂时还不支持
 
 # 用法
-
----
-
 ## 一、<span data-type="color" style="color:rgb(57, 57, 57)">common命令集合</span>
 tea：启动
 tea log/db/...：这种启动可以直接进入对应的模块
