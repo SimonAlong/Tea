@@ -29,7 +29,7 @@ public class Screen {
 
     private void showCatalog() {
         showCyan(context.getCatalog());
-        show(">");
+        show("> ");
     }
 
     Screen() {
