@@ -15,12 +15,12 @@ public class Db implements Processor {
 
     @Override
     public void process(Context context) {
-        showBlueLn("db 处理：input = "+context.getInput()+", 目录："+context.getCatalog());
+        showBlueLn("db 处理：input = " + context.getInput() + ", 目录：" + context.getCatalog());
     }
 
     @Override
     public boolean isCmd(Context context) {
-        if(context.getInput().startsWith("select")){
+        if (context.getInput().startsWith("select")) {
             return true;
         }
         return false;

@@ -15,7 +15,7 @@ public class Screen {
     private Context context = new Context();
     private Parser parser;
 
-    public void start() {
+    void start() {
         while (!context.getStop()) {
             try {
                 showCatalog();
@@ -25,16 +25,11 @@ public class Screen {
                 e.printStackTrace();
             }
         }
-        end();
     }
 
-    void showCatalog() {
+    private void showCatalog() {
         showCyan(context.getCatalog());
         show(">");
-    }
-
-    void end() {
-        showBlueLn("tea end");
     }
 
     Screen() {
