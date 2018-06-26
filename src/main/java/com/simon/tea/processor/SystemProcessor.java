@@ -5,6 +5,7 @@ import com.simon.tea.Processor;
 import com.simon.tea.annotation.Module;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static com.simon.tea.Constant.SYS_CMD;
 import static com.simon.tea.Print.*;
@@ -15,7 +16,7 @@ import static com.simon.tea.Print.*;
  */
 @Module(name = SYS_CMD)
 public class SystemProcessor implements Processor {
-    ThreadLocal<Context> local = new ThreadLocal<>();
+    Context context;
     List<String> commonCmdList = Arrays.asList("tea", "ll", "cd", "quit", "his", "exit");
 
     @Override
@@ -25,7 +26,7 @@ public class SystemProcessor implements Processor {
 
     @Override
     public void process(Context context) {
-        local.set(context);
+        this.context = context;
         String input = context.getInput();
         showLn("common 处理：input = ：" + input + " catalog = "+context.getCatalog());
         switch (input){
@@ -37,19 +38,16 @@ public class SystemProcessor implements Processor {
 //            case "his": his();break;
         }
         if(input.equals("exit")){
-            context.setStop(true);
-        }
+            context.setStop(true);        }
     }
 
     private void exit(){
-        Context context = local.get();
         context.setStop(true);
     }
 
     private void ll(){
-        
+//        context.getCmdNames().forEach();
     }
-
     private String readFirstWord(String input){
         return input.split(" ")[0];
     }
