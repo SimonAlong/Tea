@@ -6,7 +6,6 @@ import static com.simon.tea.Print.showCyan;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import lombok.Builder;
 
 /**
  * @author zhouzhenyong
@@ -14,7 +13,7 @@ import lombok.Builder;
  */
 public class Screen {
     private String input = "";
-    private Control control = Control.builder().build();
+    private Parser parser = Parser.builder().build();
 
     public boolean judge() {
         return !input.equals("exit");
@@ -30,13 +29,13 @@ public class Screen {
     }
 
     public void showCatalog() {
-        showCyan(control.getCatalog());
+        showCyan(parser.getCatalog());
         show(" >");
     }
 
     public void process() throws IOException {
         input = new BufferedReader(new InputStreamReader(System.in)).readLine();
-        control.process(input);
+        parser.process(input);
     }
 
     public void end(){

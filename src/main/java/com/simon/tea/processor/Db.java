@@ -1,5 +1,6 @@
 package com.simon.tea.processor;
 
+import com.simon.tea.Command;
 import com.simon.tea.Processor;
 import com.simon.tea.annotation.Module;
 import org.springframework.stereotype.Component;
@@ -22,5 +23,10 @@ public class Db implements Processor {
     @Override
     public void process() {
         showBlue("db 接收到并进行处理了：" + local.get());
+    }
+
+    @Override
+    public boolean isModuleCmd(String input) {
+        return false;
     }
 }

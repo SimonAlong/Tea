@@ -4,7 +4,7 @@ package com.simon.tea;
  * @author zhouzhenyong
  * @since 2018/6/25 下午4:23
  */
-public interface Processor {
+public interface Processor extends Command{
     ThreadLocal<String> local = new ThreadLocal<>();
 
     default boolean math(String input){
