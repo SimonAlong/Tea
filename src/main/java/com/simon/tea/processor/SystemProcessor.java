@@ -1,11 +1,12 @@
 package com.simon.tea.processor;
 
+import com.simon.tea.annotation.Cmd;
 import com.simon.tea.context.Context;
 import com.simon.tea.Processor;
 import com.simon.tea.annotation.Module;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import org.springframework.util.StringUtils;
 
 import static com.simon.tea.Constant.SYS_CMD;
 import static com.simon.tea.Print.*;
@@ -21,34 +22,51 @@ public class SystemProcessor implements Processor {
 
     @Override
     public boolean isCmd(Context context) {
-        return commonCmdList.stream().anyMatch(cmd -> readFirstWord(context.getInput()).equals(cmd));
+        return commonCmdList.stream().anyMatch(cmd -> firstWord(context.getInput()).equals(cmd));
     }
 
     @Override
     public void process(Context context) {
         this.context = context;
-        String input = context.getInput();
-        showLn("common 处理：input = ：" + input + " catalog = "+context.getCatalog());
+        String input = firstWord(context.getInput());
+//        showLn("common 处理：input = ：" + input + " catalog = "+context.getCatalog());
         switch (input){
 //            case "tea": tea();break;
             case "exit": exit();break;
             case "ll": ll();break;
-//            case "cd": cd();break;
+            case "cd": cd();break;
 //            case "quit": quit();break;
 //            case "his": his();break;
         }
         if(input.equals("exit")){
-            context.setStop(true);        }
+            context.setStop(true);
+        }
     }
 
     private void exit(){
         context.setStop(true);
     }
 
+    @Cmd("ll")
     private void ll(){
-//        context.getCmdNames().forEach();
+        context.getCmdNames().forEach(cmd->{
+            showBlueSpace(cmd);
+        });
+        showLn("");
     }
-    private String readFirstWord(String input){
+
+    private void cd(){
+        String cmd = secondWord(context.getInput());
+        if(StringUtils.hasText(cmd) && context.containCmd(cmd)){
+            context.enterCmd(cmd);
+        }
+    }
+
+    private String firstWord(String input){
         return input.split(" ")[0];
+    }
+
+    private String secondWord(String input){
+        return input.split(" ")[1];
     }
 }

@@ -20,4 +20,12 @@ public class Context {
     private String input = "";
     private Boolean stop = false;
     private Set<String> cmdNames = new HashSet<>();
+
+    public boolean containCmd(String cmd){
+        return cmdNames.contains(cmd);
+    }
+
+    public void enterCmd(String cmd){
+        catalog = catalog + "/" + cmd;
+    }
 }

@@ -19,6 +19,10 @@ public class Print {
         System.out.print(ansi().fg(RED).render(str).reset());
     }
 
+    public void showRedSpace(String str) {
+        System.out.print(ansi().fg(RED).render(str).reset()+"   ");
+    }
+
     public void showRedLn(String str) {
         System.out.println(ansi().fg(RED).render(str).reset());
     }
@@ -28,6 +32,10 @@ public class Print {
      */
     public void showBlack(String str) {
         System.out.print(ansi().fg(BLACK).render(str).reset());
+    }
+
+    public void showBlackSpace(String str) {
+        System.out.print(ansi().fg(BLACK).render(str).reset()+"   ");
     }
 
     public void showBlackLn(String str) {
@@ -41,6 +49,10 @@ public class Print {
         System.out.print(ansi().fg(GREEN).render(str).reset());
     }
 
+    public void showGreenSpace(String str) {
+        System.out.print(ansi().fg(GREEN).render(str).reset()+"   ");
+    }
+
     public void showGreenLn(String str) {
         System.out.println(ansi().fg(GREEN).render(str).reset());
     }
@@ -50,6 +62,10 @@ public class Print {
      */
     public void showYellow(String str) {
         System.out.print(ansi().fg(YELLOW).render(str).reset());
+    }
+
+    public void showYellowSpace(String str) {
+        System.out.print(ansi().fg(YELLOW).render(str).reset()+"   ");
     }
 
     public void showYellowLn(String str) {
@@ -63,6 +79,10 @@ public class Print {
         System.out.print(ansi().fg(BLUE).render(str).reset());
     }
 
+    public void showBlueSpace(String str) {
+        System.out.print(ansi().fg(BLUE).render(str).reset()+"   ");
+    }
+
     public void showBlueLn(String str) {
         System.out.println(ansi().fg(BLUE).render(str).reset());
     }
@@ -72,6 +92,10 @@ public class Print {
      */
     public void showMagenta(String str) {
         System.out.print(ansi().fg(MAGENTA).render(str).reset());
+    }
+
+    public void showMagentaSpace(String str) {
+        System.out.print(ansi().fg(MAGENTA).render(str).reset()+"   ");
     }
 
     public void showMagentaLn(String str) {
@@ -85,6 +109,10 @@ public class Print {
         System.out.print(ansi().fg(CYAN).render(str).reset());
     }
 
+    public void showCyanSpace(String str) {
+        System.out.print(ansi().fg(CYAN).render(str).reset()+"   ");
+    }
+
     public void showCyanLn(String str) {
         System.out.println(ansi().fg(CYAN).render(str).reset());
     }
@@ -96,6 +124,10 @@ public class Print {
         System.out.print(ansi().fg(WHITE).render(str).reset());
     }
 
+    public void showWhiteSpace(String str) {
+        System.out.print(ansi().fg(WHITE).render(str).reset()+"   ");
+    }
+
     public void showWhiteLn(String str) {
         System.out.println(ansi().fg(WHITE).render(str).reset());
     }
@@ -105,6 +137,10 @@ public class Print {
      */
     public void show(String str) {
         System.out.print(ansi().fg(DEFAULT).render(str).reset());
+    }
+
+    public void showSpace(String str) {
+        System.out.print(ansi().fg(DEFAULT).render(str).reset()+"   ");
     }
 
     public void showLn(String str) {
