@@ -1,7 +1,11 @@
-package com.simon.tea;
+package com.simon.tea.context;
 
 import static com.simon.tea.Constant.BASE_CATALOG;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,4 +19,5 @@ public class Context {
     private String catalog = BASE_CATALOG;
     private String input = "";
     private Boolean stop = false;
+    private Set<String> cmdNames = new HashSet<>();
 }

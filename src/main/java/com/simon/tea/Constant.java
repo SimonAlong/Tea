@@ -6,4 +6,5 @@ package com.simon.tea;
  */
 public interface Constant {
     String BASE_CATALOG = "tea";
+    String SYS_CMD = "system";
 }

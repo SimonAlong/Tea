@@ -2,11 +2,10 @@ package com.simon.tea;
 
 import static com.simon.tea.Print.*;
 
+import com.simon.tea.context.Context;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import javax.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
 
 /**
  * @author zhouzhenyong
@@ -16,8 +15,8 @@ public class Screen {
     private Context context = new Context();
     private Parser parser;
 
-    public void start(){
-        while(!context.getStop()){
+    public void start() {
+        while (!context.getStop()) {
             try {
                 showCatalog();
                 context.setInput(new BufferedReader(new InputStreamReader(System.in)).readLine());
@@ -29,17 +28,16 @@ public class Screen {
         end();
     }
 
-    public void showCatalog() {
+    void showCatalog() {
         showCyan(context.getCatalog());
         show(">");
     }
 
-    public void end(){
-        show("tea end");
+    void end() {
+        showBlueLn("tea end");
     }
 
-
-    public Screen(){
+    Screen() {
         parser = new Parser(context);
     }
 }

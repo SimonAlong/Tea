@@ -1,10 +1,8 @@
 package com.simon.tea.processor;
 
-import com.simon.tea.Command;
-import com.simon.tea.Context;
+import com.simon.tea.context.Context;
 import com.simon.tea.Processor;
 import com.simon.tea.annotation.Module;
-import org.springframework.stereotype.Component;
 
 import static com.simon.tea.Print.*;
 
