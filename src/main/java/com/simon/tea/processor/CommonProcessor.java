@@ -1,10 +1,12 @@
 package com.simon.tea.processor;
 
+import com.simon.tea.Context;
 import com.simon.tea.Processor;
 import com.simon.tea.annotation.Module;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.cache.annotation.Cacheable;
+
 import static com.simon.tea.Print.*;
 
 /**
@@ -13,20 +15,19 @@ import static com.simon.tea.Print.*;
  */
 @Module(name = "common")
 public class CommonProcessor implements Processor {
-    List<String> commonCmdList = Arrays.asList("tea","ll", "cd", "quit", "his");
+    List<String> commonCmdList = Arrays.asList("tea", "ll", "cd", "quit", "his", "exit");
 
     @Override
-    public boolean mathMode(String input) {
-        return true;
+    public boolean isCmd(Context context) {
+        return commonCmdList.stream().anyMatch(cmd -> context.getInput().startsWith(cmd));
     }
 
     @Override
-    public void process() {
-        show("公共处理参数："+local.get());
-    }
-
-    @Override
-    public boolean isModuleCmd(String input) {
-        return commonCmdList.stream().anyMatch(cmd->input.startsWith(cmd));
+    public void process(Context context) {
+        String input = context.getInput();
+        showLn("common 处理：input = ：" + input + " catalog = "+context.getCatalog());
+        if(input.equals("exit")){
+            context.setStop(true);
+        }
     }
 }

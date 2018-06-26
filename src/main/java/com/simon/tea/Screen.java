@@ -1,44 +1,45 @@
 package com.simon.tea;
 
-import static com.simon.tea.Print.show;
-import static com.simon.tea.Print.showCyan;
+import static com.simon.tea.Print.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import javax.annotation.PostConstruct;
+import org.springframework.stereotype.Component;
 
 /**
  * @author zhouzhenyong
  * @since 2018/6/25 下午5:26
  */
 public class Screen {
-    private String input = "";
-    private Parser parser = Parser.builder().build();
-
-    public boolean judge() {
-        return !input.equals("exit");
-    }
+    private Context context = new Context();
+    private Parser parser;
 
     public void start(){
-        try {
-            showCatalog();
-            process();
-        } catch (IOException e) {
-            e.printStackTrace();
+        while(!context.getStop()){
+            try {
+                showCatalog();
+                context.setInput(new BufferedReader(new InputStreamReader(System.in)).readLine());
+                parser.process();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        end();
     }
 
     public void showCatalog() {
-        showCyan(parser.getCatalog());
-        show(" >");
-    }
-
-    public void process() throws IOException {
-        input = new BufferedReader(new InputStreamReader(System.in)).readLine();
-        parser.process(input);
+        showCyan(context.getCatalog());
+        show(">");
     }
 
     public void end(){
         show("tea end");
+    }
+
+
+    public Screen(){
+        parser = new Parser(context);
     }
 }

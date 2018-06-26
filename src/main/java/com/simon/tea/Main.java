@@ -8,10 +8,7 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        Screen schedule = new Screen();
-        while(schedule.judge()){
-            schedule.start();
-        }
-        schedule.end();
+        Screen screen = new Screen();
+        screen.start();
     }
 }
