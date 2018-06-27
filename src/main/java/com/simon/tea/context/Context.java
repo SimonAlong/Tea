@@ -32,7 +32,7 @@ public class Context {
     /**
      * 获取当前目录下的列表
      *
-     * @return
+     * @return 配置文件名列表
      */
     public List<String> getCfgList(){
         return manager.getCfgList();

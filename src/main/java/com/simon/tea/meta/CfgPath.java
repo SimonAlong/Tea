@@ -12,6 +12,13 @@ import lombok.experimental.Accessors;
 @Builder
 @Accessors(chain = true)
 public class CfgPath {
+
+    /**
+     * 配置名字
+     */
     private String name;
+    /**
+     * 配置的路径
+     */
     private String path;
 }

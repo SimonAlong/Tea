@@ -19,8 +19,8 @@ public class ClassUtil {
     /**
      * 读取指定包中的类
      *
-     * @param packagePath
-     * @return
+     * @param packagePath 包路径
+     * @return  包路径下所有的class类
      */
     public Set<Class<?>> readClsFromPath(String packagePath){
         String filePath = ClassLoader.getSystemResource("").getPath() + packagePath;

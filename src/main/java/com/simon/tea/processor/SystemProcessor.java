@@ -4,6 +4,9 @@ import com.simon.tea.Print;
 import com.simon.tea.annotation.Cmd;
 import com.simon.tea.context.Context;
 import com.simon.tea.annotation.Module;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.util.StringUtils;
 
 import static com.simon.tea.Constant.BASE_CATALOG;
@@ -64,5 +67,10 @@ public class SystemProcessor {
     @Cmd(value = "help", describe = "用于显示当前命令的用法")
     public void help(Context context) {
         showLn("识别命令：help");
+//        List<Cmd> cmds = context.getCmdHandlerMap().values().stream().map(h->h.getCmd()).collect(Collectors.toList());
+//        cmds.forEach(cmd->{
+//
+//        });
+        showTable(Collections.emptyList(), "value", "alias", "describe");
     }
 }

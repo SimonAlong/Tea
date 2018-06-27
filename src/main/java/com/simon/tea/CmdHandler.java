@@ -1,5 +1,6 @@
 package com.simon.tea;
 
+import com.simon.tea.annotation.Cmd;
 import com.simon.tea.context.Context;
 import java.lang.reflect.Method;
 import lombok.Builder;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CmdHandler {
+    private Cmd cmd;
     private Method handler;
     private Object obj;
 

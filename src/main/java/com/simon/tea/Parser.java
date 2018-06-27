@@ -58,7 +58,7 @@ public class Parser {
             Cmd cmd = method.getAnnotation(Cmd.class);
             Optional.ofNullable(cmd).map(c -> {
                 try {
-                    cmdMap.putIfAbsent(c.value(), CmdHandler.builder().handler(method).obj(cls.newInstance()).build());
+                    cmdMap.putIfAbsent(c.value(), CmdHandler.builder().cmd(cmd).handler(method).obj(cls.newInstance()).build());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

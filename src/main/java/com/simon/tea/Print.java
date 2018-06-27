@@ -3,6 +3,12 @@ package com.simon.tea;
 import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -153,5 +159,50 @@ public class Print {
 
     public void showError(String input) {
         showRedLn("error - " + input);
+    }
+
+    public void showTable(List<Map<String, Object>> bodies, String... heads) {
+        showTableHead(heads);
+        showTableBody(bodies);
+        showTableCnt();
+    }
+
+    private void showTableHead(String... heads) {
+        List<String> headList = Arrays.asList(heads);
+        headList.add("index");
+        showLn("------------------------------------------------------------------------");
+        headList.forEach(h -> {
+            show(h);
+            show("          ");
+        });
+        showLn("");
+        showLn("------------------------------------------------------------------------");
+    }
+
+    private void showTableBody(List<Map<String, Object>> bodies) {
+
+    }
+
+    private void showTableCnt() {
+
+    }
+
+    /**
+     * 计算一行的最长长度
+     */
+    public Integer generateWidth(List<Map<String, Object>> bodies, String... heads) {
+        Integer maxLength = 0;
+    }
+
+    public List<Integer> computeColumnMaxLength(List<Map<String, Object>> bodies, List<String> headList) {
+        List<Integer> columnMaxLengthList = new ArrayList<>(headList.size()).stream().map(h -> 0)
+            .collect(Collectors.toList());
+        for (int i = 0; i < headList.size(); i++) {
+            AtomicInteger max = new AtomicInteger(0);
+            int finalI = i;
+            bodies.stream().map(body->body.get(headList.get(finalI))).collect(Collectors.toList()).forEach(column->{
+                max.set(Math.max(max.get(), String.valueOf(column).length()));
+            });
+        }
     }
 }

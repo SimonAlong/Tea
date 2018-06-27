@@ -21,6 +21,12 @@ public @interface Cmd {
     String value();
 
     /**
+     * 别名
+     * @return
+     */
+    String alias() default "";
+
+    /**
      * 对应的命令名字
      * @return
      */
