@@ -4,9 +4,14 @@ import com.simon.tea.Print;
 import com.simon.tea.annotation.Cmd;
 import com.simon.tea.context.Context;
 import com.simon.tea.annotation.Module;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.StringUtils;
 
 import static com.simon.tea.Constant.BASE_CATALOG;
@@ -71,6 +76,23 @@ public class SystemProcessor {
 //        cmds.forEach(cmd->{
 //
 //        });
-        showTable(Collections.emptyList(), "value", "alias", "describe");
+
+        showTable(generateMapList(20), "value", "alias", "describe");
+    }
+
+    public List<Map<String, Object>> generateMapList(Integer num){
+        List dataList = new ArrayList(num);
+        for(int i=0;i<num;i++){
+            dataList.add(generateMap(num));
+        }
+        return dataList;
+    }
+
+    public Map<String, Object> generateMap(Integer cnt){
+        Map<String, Object> data = new HashMap();
+        String str = "zhouandjsdfoawenasjdfoausdfaldnfaenadffaueowen";
+        data.put("alias", str.substring(RandomUtils.nextInt(0, str.length())));
+        data.put("describe", str.substring(RandomUtils.nextInt(0, str.length())));
+        return data;
     }
 }
