@@ -16,14 +16,15 @@ public class Screen {
     private Parser parser;
 
     void start() {
-        while (!context.getStop()) {
-            try {
+        try {
+            while (!context.getStop()){
                 showCatalog();
                 context.setInput(new BufferedReader(new InputStreamReader(System.in)).readLine());
                 parser.process();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        }catch (Exception e){
+            context.setStop(true);
+            e.printStackTrace();
         }
     }
 

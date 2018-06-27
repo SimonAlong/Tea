@@ -1,6 +1,10 @@
 package com.simon.tea.processor;
 
+import static com.simon.tea.Print.*;
+
+import com.simon.tea.annotation.Cmd;
 import com.simon.tea.annotation.Module;
+import com.simon.tea.context.Context;
 
 /**
  * @author zhouzhenyong
@@ -8,17 +12,8 @@ import com.simon.tea.annotation.Module;
  */
 @Module(name = "db")
 public class Db {
-//
-//    @Override
-//    public void process(Context context) {
-//        showBlueLn("db 处理：input = " + context.getInput() + ", 目录：" + context.getCatalog());
-//    }
-//
-//    @Override
-//    public boolean isCmd(Context context) {
-//        if (context.getInput().startsWith("select")) {
-//            return true;
-//        }
-//        return false;
-//    }
+    @Cmd(value = "show", describe = "展示表的数据：show tableNam，跟select * from tableName一样")
+    public void showTable(Context context){
+        show("显示表数据");
+    }
 }

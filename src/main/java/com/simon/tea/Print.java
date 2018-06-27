@@ -20,7 +20,7 @@ public class Print {
     }
 
     public void showRedSpace(String str) {
-        System.out.print(ansi().fg(RED).render(str).reset()+"   ");
+        System.out.print(ansi().fg(RED).render(str).reset() + "   ");
     }
 
     public void showRedLn(String str) {
@@ -35,7 +35,7 @@ public class Print {
     }
 
     public void showBlackSpace(String str) {
-        System.out.print(ansi().fg(BLACK).render(str).reset()+"   ");
+        System.out.print(ansi().fg(BLACK).render(str).reset() + "   ");
     }
 
     public void showBlackLn(String str) {
@@ -50,7 +50,7 @@ public class Print {
     }
 
     public void showGreenSpace(String str) {
-        System.out.print(ansi().fg(GREEN).render(str).reset()+"   ");
+        System.out.print(ansi().fg(GREEN).render(str).reset() + "   ");
     }
 
     public void showGreenLn(String str) {
@@ -65,7 +65,7 @@ public class Print {
     }
 
     public void showYellowSpace(String str) {
-        System.out.print(ansi().fg(YELLOW).render(str).reset()+"   ");
+        System.out.print(ansi().fg(YELLOW).render(str).reset() + "   ");
     }
 
     public void showYellowLn(String str) {
@@ -80,7 +80,7 @@ public class Print {
     }
 
     public void showBlueSpace(String str) {
-        System.out.print(ansi().fg(BLUE).render(str).reset()+"   ");
+        System.out.print(ansi().fg(BLUE).render(str).reset() + "   ");
     }
 
     public void showBlueLn(String str) {
@@ -95,7 +95,7 @@ public class Print {
     }
 
     public void showMagentaSpace(String str) {
-        System.out.print(ansi().fg(MAGENTA).render(str).reset()+"   ");
+        System.out.print(ansi().fg(MAGENTA).render(str).reset() + "   ");
     }
 
     public void showMagentaLn(String str) {
@@ -110,7 +110,7 @@ public class Print {
     }
 
     public void showCyanSpace(String str) {
-        System.out.print(ansi().fg(CYAN).render(str).reset()+"   ");
+        System.out.print(ansi().fg(CYAN).render(str).reset() + "   ");
     }
 
     public void showCyanLn(String str) {
@@ -125,7 +125,7 @@ public class Print {
     }
 
     public void showWhiteSpace(String str) {
-        System.out.print(ansi().fg(WHITE).render(str).reset()+"   ");
+        System.out.print(ansi().fg(WHITE).render(str).reset() + "   ");
     }
 
     public void showWhiteLn(String str) {
@@ -140,14 +140,18 @@ public class Print {
     }
 
     public void showSpace(String str) {
-        System.out.print(ansi().fg(DEFAULT).render(str).reset()+"   ");
+        System.out.print(ansi().fg(DEFAULT).render(str).reset() + "   ");
     }
 
     public void showLn(String str) {
         System.out.println(ansi().fg(DEFAULT).render(str).reset());
     }
 
+    public void showCmdError(String input) {
+        showError("命令不识别：" + input);
+    }
+
     public void showError(String input) {
-        showRedLn("不识别命令：" + input);
+        showRedLn("error - " + input);
     }
 }

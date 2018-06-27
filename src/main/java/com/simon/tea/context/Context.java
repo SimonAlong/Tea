@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author zhouzhenyong
@@ -23,6 +25,10 @@ public class Context {
     private Map<String, CmdHandler> cmdHandlerMap = new HashMap<>();
     private AnalyseManager manager;
 
+    public boolean isCfg(String module){
+        return manager.isCfg(module);
+    }
+
     /**
      * 获取当前目录下的列表
      *
@@ -33,21 +39,44 @@ public class Context {
     }
 
     public void load(){
-        manager.load();
+        manager.loadCmd();
     }
 
     public void unload(){
-        manager.unload();
+        manager.unloadCmd();
+    }
+
+    public void addCatalog(String module){
+        catalog += "/"+module;
+    }
+
+    public String appendCatalog(String module){
+        return catalog + "/"+module;
+    }
+
+    /**
+     * 返回上一层目录
+     */
+    public void catalogQuit(){
+        int index;
+        if((index = catalog.lastIndexOf('/')) != -1){
+            catalog = catalog.substring(0, index);
+        }
     }
 
     @Cacheable
     public String firstWord(){
-        return input.split(" ")[0];
+        if(StringUtils.hasText(input)) {
+            return input.split(" ")[0];
+        }
+        return null;
     }
 
     @Cacheable
     public String secondWord(){
-        return input.split(" ")[1];
+        if(StringUtils.hasText(input)) {
+            return input.split(" ")[1];
+        }
+        return null;
     }
-
 }

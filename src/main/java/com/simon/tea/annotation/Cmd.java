@@ -14,5 +14,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Cmd {
+    /**
+     * 对应的命令名字
+     * @return
+     */
     String value();
+
+    /**
+     * 对应的命令名字
+     * @return
+     */
+    String describe() default "";
 }
