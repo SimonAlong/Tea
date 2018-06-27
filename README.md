@@ -34,6 +34,12 @@ cd log/db/...：进入指定的模块
 exit：退出系统
 quit：退出当前模块，返回到上一层模块
 his：查看最近使用的命令
+
+help: 显示每个命令的用法
+help db或者log或者其他，可以直接查看每个模块中的其他的命令
+cat: 命令展示对应配置的内容
+cat db/cfgName 查看配置内容
+
 ## 二、<span data-type="color" style="color:rgb(57, 57, 57)">db命令集合</span>
 ### a、配置命令
 
