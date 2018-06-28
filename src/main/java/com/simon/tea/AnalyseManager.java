@@ -70,6 +70,7 @@ public class AnalyseManager {
             loadSysCfg(module.name());
             loadModuleCfg(module.name());
         }
+        context.getModuleList().add(module.name());
     }
 
     /**

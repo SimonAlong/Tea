@@ -4,7 +4,6 @@ import com.simon.tea.Print;
 import com.simon.tea.annotation.Cmd;
 import com.simon.tea.context.Context;
 import com.simon.tea.annotation.Module;
-import com.simon.tea.meta.CmdEntity;
 import com.simon.tea.util.FileUtil;
 import com.simon.tea.util.StringUtil;
 import java.io.File;
@@ -78,9 +77,10 @@ public class SystemProcessor {
     @Cmd(value = "help", describe = "用于显示当前命令的用法")
     public void help(Context context) {
         List<Map<String, Object>> cmdMap = context.getCmdHandlerMap().values().stream()
-            .map(cmdHandler -> Record.from(CmdEntity.build(cmdHandler.getCmd())))
+            .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
             .collect(Collectors.toList());
 //        showTable(generateMapList(89), 9);    //测试数据用
+        showTable(cmdMap);
     }
 
     @Cmd(value = "version", describe = "版本号")

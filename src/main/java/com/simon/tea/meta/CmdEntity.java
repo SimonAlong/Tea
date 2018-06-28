@@ -14,7 +14,9 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Builder
+@Accessors(chain = true)
 public class CmdEntity {
+    private String module;
     private String value;
     private String alias;
     private String describe;

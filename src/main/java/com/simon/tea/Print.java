@@ -4,6 +4,7 @@ import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
 import com.simon.tea.util.StringUtil;
+import com.sun.org.apache.regexp.internal.RE;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -96,7 +97,7 @@ public class Print {
     private static Integer PAGE_SIZE = 10;
 
     public void showTable(List<Map<String, Object>> bodies) {
-        showTable(bodies, 0, PAGE_SIZE);
+        showTable(bodies, 1, PAGE_SIZE);
     }
 
     public void showTable(List<Map<String, Object>> bodies, Integer pageIndex) {
@@ -151,7 +152,7 @@ public class Print {
         showNumStrLn(width, "-", GREEN);
         for (int i = 0; i < columnLengthList.size(); i++) {
             String column = headList.get(i);
-            show(column, MAGENTA);
+            show(column, RED);
             showNumStr(columnLengthList.get(i) - column.length() + COLUMN_FILL_TIP, " ");
         }
         showLn();
@@ -170,7 +171,7 @@ public class Print {
     private void showTableBody(List<String> headList, Integer startIndex, List<Map<String, Object>> bodies, List<Integer> columnLengthList,
         Integer width) {
         for (int line = 0; line < bodies.size(); line++) {
-            showValue(columnLengthList, 0, line + startIndex + 1);
+            showValue(columnLengthList, 0, line + startIndex + 1, GREEN);
             for (int columnIndex = 1; columnIndex < headList.size(); columnIndex++) {
                 String value = String.valueOf(bodies.get(line).get(headList.get(columnIndex)));
                 showValue(columnLengthList, columnIndex, value);
@@ -187,7 +188,18 @@ public class Print {
      * @param value             要打印的数据
      */
     private void showValue(List<Integer> columnLengthList, Integer index, Object value){
-        show(value);
+        showValueJudgeColor(value);
+        showNumStr(columnLengthList.get(index) - StringUtil.length(String.valueOf(value)) + COLUMN_FILL_TIP, " ");
+    }
+
+    /**
+     * 打印对应的值
+     * @param columnLengthList  每一列的最大长度
+     * @param index             对应列的索引
+     * @param value             要打印的数据
+     */
+    private void showValue(List<Integer> columnLengthList, Integer index, Object value, Color color){
+        show(value, color);
         showNumStr(columnLengthList.get(index) - StringUtil.length(String.valueOf(value)) + COLUMN_FILL_TIP, " ");
     }
 
@@ -203,7 +215,7 @@ public class Print {
         boolean omit = false;
         for (int i = 1; i <= pageNum; i++) {
             if (i == pageIndex) {
-                showSpace(i, BLUE);
+                showSpace(i, GREEN);
                 continue;
             }
             if (i <= 6 || i == pageNum) {
@@ -254,5 +266,17 @@ public class Print {
             columnMaxLengthList.add(max.get());
         }
         return columnMaxLengthList;
+    }
+
+    /**
+     * 根据输入的类型进行添加不同的颜色
+     */
+    private void showValueJudgeColor(Object word){
+        if(word.equals(Constant.SYS_CMD)){
+            show(word, RED);
+        }else{
+            //todo 其他类型判断
+            show(word, WHITE);
+        }
     }
 }

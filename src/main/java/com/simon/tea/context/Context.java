@@ -5,6 +5,7 @@ import static com.simon.tea.Constant.BASE_CATALOG;
 import com.simon.tea.AnalyseManager;
 import com.simon.tea.CmdHandler;
 import com.simon.tea.util.StringUtil;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class Context {
     //key 是当前拥有的命令
     private Map<String, CmdHandler> cmdHandlerMap = new HashMap<>();
     private AnalyseManager manager;
+    private List<String> moduleList = new ArrayList<>(5);
 
     public boolean isCfg(String module){
         return manager.isCfg(module);
@@ -73,7 +75,10 @@ public class Context {
     @Cacheable
     public String secondWord(){
         if(StringUtils.hasText(input)) {
-            return input.split(" ")[1];
+            String[] words = input.split(" ");
+            if(words.length >= 2) {
+                return input.split(" ")[1];
+            }
         }
         return null;
     }
