@@ -101,7 +101,7 @@ public class AnalyseManager {
             if (!FileUtil.fileExist(Constant.MODULE_PATH + moduleName + "/.")) {
                 FileUtil.createFile(Constant.MODULE_PATH + moduleName + "/.");
             } else {
-                List<String> cfgList = FileUtil.readFromDir(Constant.MODULE_PATH + moduleName);
+                List<String> cfgList = FileUtil.readListFromPath(Constant.MODULE_PATH + moduleName);
                 String moduleCatalog = context.appendCatalog(moduleName);
                 configMap.compute(moduleCatalog, (key, value) -> {
                     if (null == value) {

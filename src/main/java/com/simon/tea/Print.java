@@ -3,8 +3,9 @@ package com.simon.tea;
 import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
+import com.simon.tea.util.StringUtil;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
+import lombok.val;
+import org.fusesource.jansi.Ansi.Color;
 
 /**
  * @author zhouzhenyong
@@ -19,182 +22,49 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class Print {
-    private static final Integer TABLE_FILL_NUM = 5;
-
     /**
-     * 红色
-     */
-    public void showRed(String str) {
-        System.out.print(ansi().fg(RED).render(str).reset());
-    }
-
-    public void showRedSpace(String str) {
-        System.out.print(ansi().fg(RED).render(str).reset() + "   ");
-    }
-
-    public void showRedLn(String str) {
-        System.out.println(ansi().fg(RED).render(str).reset());
-    }
-
-    /**
-     * 黑色
-     */
-    public void showBlack(String str) {
-        System.out.print(ansi().fg(BLACK).render(str).reset());
-    }
-
-    public void showBlackSpace(String str) {
-        System.out.print(ansi().fg(BLACK).render(str).reset() + "   ");
-    }
-
-    public void showBlackLn(String str) {
-        System.out.println(ansi().fg(BLACK).render(str).reset());
-    }
-
-    /**
-     * 绿色
-     */
-    public void showGreen(String str) {
-        System.out.print(ansi().fg(GREEN).render(str).reset());
-    }
-
-    public void showGreenSpace(String str) {
-        System.out.print(ansi().fg(GREEN).render(str).reset() + "   ");
-    }
-
-    public void showGreenLn(String str) {
-        System.out.println(ansi().fg(GREEN).render(str).reset());
-    }
-
-    /**
-     * 黄色
-     */
-    public void showYellow(String str) {
-        System.out.print(ansi().fg(YELLOW).render(str).reset());
-    }
-
-    public void showYellowSpace(String str) {
-        System.out.print(ansi().fg(YELLOW).render(str).reset() + "   ");
-    }
-
-    public void showYellowLn(String str) {
-        System.out.println(ansi().fg(YELLOW).render(str).reset());
-    }
-
-    /**
-     * 蓝色
-     */
-    public void showBlue(String str) {
-        System.out.print(ansi().fg(BLUE).render(str).reset());
-    }
-
-    public void showBlueSpace(String str) {
-        System.out.print(ansi().fg(BLUE).render(str).reset() + "   ");
-    }
-
-    public void showBlueLn(String str) {
-        System.out.println(ansi().fg(BLUE).render(str).reset());
-    }
-
-    /**
-     * 品红
-     */
-    public void showMagenta(String str) {
-        System.out.print(ansi().fg(MAGENTA).render(str).reset());
-    }
-
-    public void showMagentaSpace(String str) {
-        System.out.print(ansi().fg(MAGENTA).render(str).reset() + "   ");
-    }
-
-    public void showMagentaLn(String str) {
-        System.out.println(ansi().fg(MAGENTA).render(str).reset());
-    }
-
-    /**
-     * 青色
-     */
-    public void showCyan(String str) {
-        System.out.print(ansi().fg(CYAN).render(str).reset());
-    }
-
-    public void showCyanSpace(String str) {
-        System.out.print(ansi().fg(CYAN).render(str).reset() + "   ");
-    }
-
-    public void showCyanLn(String str) {
-        System.out.println(ansi().fg(CYAN).render(str).reset());
-    }
-
-    /**
-     * 白色
-     */
-    public void showWhite(String str) {
-        System.out.print(ansi().fg(WHITE).render(str).reset());
-    }
-
-    public void showWhiteSpace(String str) {
-        System.out.print(ansi().fg(WHITE).render(str).reset() + "   ");
-    }
-
-    public void showWhiteLn(String str) {
-        System.out.println(ansi().fg(WHITE).render(str).reset());
-    }
-
-    /**
-     * 系统默认颜色
+     * 颜色一共有这么几种：
+     * BLACK(0, "BLACK"), RED(1, "RED"), GREEN(2, "GREEN"), YELLOW(3, "YELLOW"), BLUE(4, "BLUE"), MAGENTA(5,
+     * "MAGENTA"), CYAN(6, "CYAN"), WHITE(7, "WHITE"), DEFAULT(9, "DEFAULT");
      */
     public void show(Object str) {
         System.out.print(ansi().fg(DEFAULT).render(String.valueOf(str)).reset());
     }
 
-    public void showSpace(String str) {
-        System.out.print(ansi().fg(DEFAULT).render(str).reset() + "   ");
+    public void show(Object str, Color color) {
+        System.out.print(ansi().fg(color).render(String.valueOf(str)).reset());
     }
 
-    public void showLn(String str) {
-        System.out.println(ansi().fg(DEFAULT).render(str).reset());
+    public void showSpace(Object str) {
+        System.out.print(ansi().fg(DEFAULT).render(String.valueOf(str)).reset() + "   ");
+    }
+
+    public void showSpace(Object str, Color color) {
+        System.out.print(ansi().fg(color).render(String.valueOf(str)).reset() + "   ");
+    }
+
+    public void showLn(Object str) {
+        System.out.println(ansi().fg(DEFAULT).render(String.valueOf(str)).reset());
+    }
+
+    public void showLn(Object str, Color color) {
+        System.out.println(ansi().fg(color).render(String.valueOf(str)).reset());
     }
 
     public void showLn() {
         showLn("");
     }
 
-    public void showCmdError(String input) {
+    public void showCmdError(Object input) {
         showError("命令不识别：" + input);
     }
 
-    public void showError(String input) {
-        showRedLn("error - " + input);
+    public void showError(Object input) {
+        showLn("error - " + input, RED);
     }
 
-
-    public void showTable(List<Map<String, Object>> bodies, String... heads) {
-        LinkedList<String> headList = new LinkedList<>(Arrays.asList(heads));
-        headList.addFirst("index");
-
-        List<Integer> columnLengthList = computeColumnMaxLength(bodies, headList);
-        Integer width = generateWidth(bodies, headList);
-        showTableHead(headList, columnLengthList, width);
-        showTableBody(headList, bodies, columnLengthList, width);
-        showTableCnt();
-    }
-
-    /**
-     * 输出表头
-     * @param headList          表头列表
-     * @param columnLengthList  每列的长度
-     * @param width             表最大长度
-     */
-    private void showTableHead(List<String> headList, List<Integer> columnLengthList, Integer width) {
-        showNumStrLn(width, "-");
-        for (int i = 0; i < columnLengthList.size(); i++) {
-            String column = headList.get(i);
-            show(column);
-            showNumStr(columnLengthList.get(i) - column.length() + TABLE_FILL_NUM, " ");
-        }
-        showLn();
-        showNumStrLn(width, "-");
+    public void showWarning(Object input) {
+        showLn("warning - " + input, YELLOW);
     }
 
     public void showNumStr(Integer length, String str) {
@@ -203,54 +73,184 @@ public class Print {
         }
     }
 
+    public void showNumStr(Integer length, String str, Color color) {
+        for (int i = 0; i < length; i++) {
+            show(str, color);
+        }
+    }
+
     public void showNumStrLn(Integer length, String str) {
         showNumStr(length, str);
         showLn();
     }
 
-    private void showTableBody(List<String> headList, List<Map<String, Object>> bodies, List<Integer> columnLengthList, Integer width) {
-        for (int line = 0; line < bodies.size(); line++) {
-            show(line);
-            showNumStr(columnLengthList.get(0) - String.valueOf(line).length() + TABLE_FILL_NUM, " ");
-            for (int columnIndex = 1; columnIndex < headList.size(); columnIndex++) {
-                String value = String.valueOf(bodies.get(line).get(headList.get(columnIndex)));
-                show(value);
-                showNumStr(columnLengthList.get(columnIndex) - String.valueOf(value).length() + TABLE_FILL_NUM, " ");
+    public void showNumStrLn(Integer length, String str, Color color) {
+        showNumStr(length, str, color);
+        showLn();
+    }
+
+    /**
+     * 每列数据后面填充的空格
+     */
+    private static final Integer COLUMN_FILL_TIP = 2;
+    private static Integer PAGE_SIZE = 10;
+
+    public void showTable(List<Map<String, Object>> bodies) {
+        showTable(bodies, 0, PAGE_SIZE);
+    }
+
+    public void showTable(List<Map<String, Object>> bodies, Integer pageIndex) {
+        showTable(bodies, pageIndex, PAGE_SIZE);
+    }
+
+    public void showTable(List<Map<String, Object>> bodies, Integer pageIndex, Integer pageSize){
+        if(!bodies.isEmpty()){
+            Integer totalSize = bodies.size();
+            Integer startIndex = (pageIndex == 0 ? 0 : pageIndex - 1) * pageSize;
+            Integer endIndex = startIndex + pageSize;
+            if(startIndex > totalSize){
+                showError("索引超过数组");
+                return;
             }
-            showLn();
-            showNumStrLn(width, "-");
+            val splitBodies = bodies.subList(startIndex, (endIndex > totalSize ? totalSize : endIndex));
+            val headList = preHandleHead(splitBodies);
+
+            val columnLengthList = computeColumnMaxLength(splitBodies, headList, startIndex);
+            Integer width = generateWidth(splitBodies, headList, startIndex);
+
+            showTableHead(headList, columnLengthList, width);
+            showTableBody(headList, startIndex, splitBodies, columnLengthList, width);
+            showTableCnt(totalSize, pageIndex, splitBodies);
+        }else{
+            showWarning("数据为空");
         }
     }
 
-    private void showTableCnt() {
+    private LinkedList<String> preHandleHead(List<Map<String, Object>> bodies){
+        assert !bodies.isEmpty();
+        val headList = new LinkedList<String>(bodies.get(0).keySet());
+        Collections.reverse(headList);
+        headList.addFirst("index");
+        return headList;
+    }
 
+    private List<Map<String, Object>> splitTable(List<Map<String, Object>> bodies, Integer pageIndex, Integer pageSize){
+        Integer startIndex = (pageIndex == 0 ? 0 : pageIndex - 1) * pageSize;
+        Integer endIndex = startIndex + pageSize;
+        return bodies.subList(startIndex, endIndex);
+    }
+
+    /**
+     * 输出表头
+     *
+     * @param headList 表头列表
+     * @param columnLengthList 每列的长度
+     * @param width 表最大长度
+     */
+    private void showTableHead(List<String> headList, List<Integer> columnLengthList, Integer width) {
+        showNumStrLn(width, "-", GREEN);
+        for (int i = 0; i < columnLengthList.size(); i++) {
+            String column = headList.get(i);
+            show(column, MAGENTA);
+            showNumStr(columnLengthList.get(i) - column.length() + COLUMN_FILL_TIP, " ");
+        }
+        showLn();
+        showNumStrLn(width, "-", GREEN);
+    }
+
+    /**
+     * 展示表数据
+     *
+     * @param headList          表头数据
+     * @param startIndex        表显示的开始索引
+     * @param bodies            表数据体
+     * @param columnLengthList  表列的最大长度列表
+     * @param width             表一行长度
+     */
+    private void showTableBody(List<String> headList, Integer startIndex, List<Map<String, Object>> bodies, List<Integer> columnLengthList,
+        Integer width) {
+        for (int line = 0; line < bodies.size(); line++) {
+            showValue(columnLengthList, 0, line + startIndex + 1);
+            for (int columnIndex = 1; columnIndex < headList.size(); columnIndex++) {
+                String value = String.valueOf(bodies.get(line).get(headList.get(columnIndex)));
+                showValue(columnLengthList, columnIndex, value);
+            }
+            showLn();
+            showNumStrLn(width, "-", WHITE);
+        }
+    }
+
+    /**
+     * 打印对应的值
+     * @param columnLengthList  每一列的最大长度
+     * @param index             对应列的索引
+     * @param value             要打印的数据
+     */
+    private void showValue(List<Integer> columnLengthList, Integer index, Object value){
+        show(value);
+        showNumStr(columnLengthList.get(index) - StringUtil.length(String.valueOf(value)) + COLUMN_FILL_TIP, " ");
+    }
+
+    /**
+     *
+     * @param totalSize 数据总个数
+     * @param pageIndex 数据所在页面
+     * @param bodies    分页后的数据体
+     */
+    private void showTableCnt(Integer totalSize, Integer pageIndex, List<Map<String, Object>> bodies) {
+        showSpace("总个数：" + totalSize + "         ");
+        Integer pageNum = totalSize / PAGE_SIZE + (totalSize % PAGE_SIZE > 0 ? 1 : 0);
+        boolean omit = false;
+        for (int i = 1; i <= pageNum; i++) {
+            if (i == pageIndex) {
+                showSpace(i, BLUE);
+                continue;
+            }
+            if (i <= 6 || i == pageNum) {
+                showSpace(i);
+            } else {
+                if(!omit) {
+                    showSpace("...");
+                    omit = true;
+                }
+            }
+        }
+        showLn();
+        showNumStrLn(53, "-", GREEN);
     }
 
     /**
      * 计算一行的最长长度
      */
-    public Integer generateWidth(List<Map<String, Object>> bodies, List<String> headList) {
+    private Integer generateWidth(List<Map<String, Object>> bodies, List<String> headList, Integer startIndex) {
         AtomicReference<Integer> width = new AtomicReference<>(0);
-        computeColumnMaxLength(bodies, headList).forEach(l -> width.updateAndGet(v -> v + l + TABLE_FILL_NUM));
+        //每列填充一个tip
+        computeColumnMaxLength(bodies, headList, startIndex).forEach(l -> width.updateAndGet(v -> v + l + COLUMN_FILL_TIP));
         return width.get();
     }
 
     /**
      * 获取每一列中的最大长度的列表
+     * 最左边的索引的长度和具体的数据的长度
      *
      * @param bodies table的数据
      * @param headList table的表头数据
+     * @param startIndex 数据起始点
      * @return 最大长度列表
      */
-    public List<Integer> computeColumnMaxLength(List<Map<String, Object>> bodies, List<String> headList) {
+    private List<Integer> computeColumnMaxLength(List<Map<String, Object>> bodies, List<String> headList, Integer startIndex) {
         List<Integer> columnMaxLengthList = new ArrayList<>(headList.size()).stream().map(h -> 0)
             .collect(Collectors.toList());
         for (int i = 0; i < headList.size(); i++) {
             AtomicInteger max = new AtomicInteger(headList.get(i).length());
             int finalI = i;
-            bodies.stream().map(body -> body.get(headList.get(finalI))).collect(Collectors.toList()).forEach(column -> {
-                max.set(Math.max(max.get(), String.valueOf(column).length()));
-            });
+            AtomicInteger startInd = new AtomicInteger(startIndex);
+            bodies.stream().map(body -> body.get(headList.get(finalI))).collect(Collectors.toList())
+                .forEach(columnValue -> {
+                    int m = Math.max(String.valueOf(startInd.getAndIncrement()).length(),
+                        StringUtil.length(String.valueOf(columnValue)));
+                    max.set(Math.max(m, max.get()));
+                });
             columnMaxLengthList.add(max.get());
         }
         return columnMaxLengthList;

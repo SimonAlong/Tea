@@ -52,7 +52,7 @@ public class FileUtil {
         }
     }
 
-    private BufferedReader readFile(File file) throws IOException {
+    public BufferedReader readFile(File file) throws IOException {
         return Files.newBufferedReader(file.toPath(), Constant.BASE_CHARSET);
     }
 
@@ -67,7 +67,7 @@ public class FileUtil {
      * @param dirPath 配置文件的文件夹目录
      * @return 配置文件中的配置文件列表
      */
-    public List<String> readFromDir(String dirPath){
+    public List<String> readListFromPath(String dirPath){
         File file = new File(dirPath);
         if(file.isDirectory()){
             File[] files = file.listFiles();

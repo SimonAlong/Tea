@@ -4,6 +4,7 @@ import static com.simon.tea.Constant.BASE_CATALOG;
 
 import com.simon.tea.AnalyseManager;
 import com.simon.tea.CmdHandler;
+import com.simon.tea.util.StringUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,11 +58,8 @@ public class Context {
     /**
      * 返回上一层目录
      */
-    public void catalogQuit(){
-        int index;
-        if((index = catalog.lastIndexOf('/')) != -1){
-            catalog = catalog.substring(0, index);
-        }
+    public void catalogQuit() {
+        catalog = StringUtil.backLast(catalog);
     }
 
     @Cacheable

@@ -18,13 +18,16 @@ public @interface Module {
 
     /**
      * 模块名，这个用于匹配
-     * @return
      */
     String name();
 
     /**
      * 别名
-     * @return
      */
     String alias() default "";
+
+    /**
+     * 是否可用
+     */
+    boolean available() default true;
 }

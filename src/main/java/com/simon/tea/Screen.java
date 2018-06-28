@@ -6,6 +6,7 @@ import com.simon.tea.context.Context;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import static org.fusesource.jansi.Ansi.Color.*;
 
 /**
  * @author zhouzhenyong
@@ -29,7 +30,7 @@ public class Screen {
     }
 
     private void showCatalog() {
-        showCyan(context.getCatalog());
+        show(context.getCatalog(), CYAN);
         show("> ");
     }
 
