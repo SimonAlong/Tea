@@ -25,7 +25,7 @@ import org.springframework.util.ClassUtils;
 @Accessors(chain = true)
 public class Parser {
 
-    AnalyseManager analyseManager;
+    private AnalyseManager analyseManager;
 
     public void process() {
         analyseManager.analyse();

@@ -29,27 +29,27 @@ public class Print {
      * "MAGENTA"), CYAN(6, "CYAN"), WHITE(7, "WHITE"), DEFAULT(9, "DEFAULT");
      */
     public void show(Object str) {
-        System.out.print(ansi().fg(DEFAULT).render(String.valueOf(str)).reset());
+        System.out.print(ansi().fg(DEFAULT).render(StringUtil.valueOf(str)).reset());
     }
 
     public void show(Object str, Color color) {
-        System.out.print(ansi().fg(color).render(String.valueOf(str)).reset());
+        System.out.print(ansi().fg(color).render(StringUtil.valueOf(str)).reset());
     }
 
     public void showSpace(Object str) {
-        System.out.print(ansi().fg(DEFAULT).render(String.valueOf(str)).reset() + "   ");
+        System.out.print(ansi().fg(DEFAULT).render(StringUtil.valueOf(str)).reset() + "   ");
     }
 
     public void showSpace(Object str, Color color) {
-        System.out.print(ansi().fg(color).render(String.valueOf(str)).reset() + "   ");
+        System.out.print(ansi().fg(color).render(StringUtil.valueOf(str)).reset() + "   ");
     }
 
     public void showLn(Object str) {
-        System.out.println(ansi().fg(DEFAULT).render(String.valueOf(str)).reset());
+        System.out.println(ansi().fg(DEFAULT).render(StringUtil.valueOf(str)).reset());
     }
 
     public void showLn(Object str, Color color) {
-        System.out.println(ansi().fg(color).render(String.valueOf(str)).reset());
+        System.out.println(ansi().fg(color).render(StringUtil.valueOf(str)).reset());
     }
 
     public void showLn() {

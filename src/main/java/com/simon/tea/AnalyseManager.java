@@ -8,6 +8,7 @@ import com.simon.tea.context.Context;
 import com.simon.tea.meta.CfgPath;
 import com.simon.tea.util.FileUtil;
 import com.simon.tea.util.MapUtil;
+import com.simon.tea.util.ShellUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,19 +47,35 @@ public class AnalyseManager {
     }
 
     public void loadCmd() {
-        context.getCmdHandlerMap().putAll(moduleCmdMap.get(context.getCatalog()));
+        context.getCmdHandlerMap().putAll(moduleCmdMap.get(context.getCurrentCatalog()));
     }
 
     public void unloadCmd() {
-        MapUtil.removeAll(context.getCmdHandlerMap(), moduleCmdMap.get(context.getCatalog()));
+        MapUtil.removeAll(context.getCmdHandlerMap(), moduleCmdMap.get(context.getCurrentCatalog()));
+    }
+
+    public List<String> getCfgList(String catalog) {
+        return configMap.get(catalog).stream().map(CfgPath::getName).collect(Collectors.toList());
     }
 
     public List<String> getCfgList() {
-        return configMap.get(context.getCatalog()).stream().map(CfgPath::getName).collect(Collectors.toList());
+        return configMap.get(context.getCurrentCatalog()).stream().map(CfgPath::getName).collect(Collectors.toList());
     }
 
     public boolean isCfg(String module) {
         return getCfgList().contains(module);
+    }
+
+    public void addNewCfg(String fileName) {
+        configMap.computeIfPresent(context.getCurrentCatalog(), (key, value) -> {
+            value.add(CfgPath.builder().name(fileName).path(context.getCurrentPath() + "/" + fileName).build());
+            return value;
+        });
+    }
+
+    public String getFilePath(String fileName) {
+        return configMap.get(context.getCurrentCatalog()).stream().filter(cfgPath -> cfgPath.getName().equals(fileName))
+            .findFirst().map(CfgPath::getPath).orElse("");
     }
 
     void addModule(Module module, Map<String, CmdHandler> cmdMap) {
@@ -70,7 +87,6 @@ public class AnalyseManager {
             loadSysCfg(module.name());
             loadModuleCfg(module.name());
         }
-        context.getModuleList().add(module.name());
     }
 
     /**
@@ -99,15 +115,15 @@ public class AnalyseManager {
     private void loadModuleCfg(String moduleName) {
         try {
             //创建每个模块对应的文件夹方便存储配置数据
-            if (!FileUtil.fileExist(Constant.MODULE_PATH + moduleName + "/.")) {
-                FileUtil.createFile(Constant.MODULE_PATH + moduleName + "/.");
+            if (!FileUtil.fileExist(Constant.MODULE_PATH + "/" + moduleName + "/.")) {
+                FileUtil.createFile(Constant.MODULE_PATH + "/" + moduleName + "/.");
             } else {
-                List<String> cfgList = FileUtil.readListFromPath(Constant.MODULE_PATH + moduleName);
+                List<String> cfgList = FileUtil.readListFromPath(Constant.MODULE_PATH + "/" + moduleName);
                 String moduleCatalog = context.appendCatalog(moduleName);
                 configMap.compute(moduleCatalog, (key, value) -> {
                     if (null == value) {
-                        return cfgList.stream()
-                            .map(cfg -> CfgPath.builder().name(cfg).path(Constant.MODULE_PATH + moduleName + cfg).build())
+                        return cfgList.stream().map(cfg -> CfgPath.builder().name(cfg)
+                            .path(Constant.MODULE_PATH + "/" + moduleName + "/" + cfg).build())
                             .collect(Collectors.toList());
                     } else {
                         showError("模块" + key + "已经存在");

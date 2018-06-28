@@ -21,7 +21,7 @@ public class CmdHandler {
     private Method handler;
     private Object obj;
 
-    public void handle(Context context){
+    void handle(Context context){
         try {
             handler.invoke(obj, context);
         } catch (Exception e) {

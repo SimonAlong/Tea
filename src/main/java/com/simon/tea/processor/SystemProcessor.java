@@ -1,10 +1,13 @@
 package com.simon.tea.processor;
 
+import com.simon.tea.Constant;
 import com.simon.tea.Print;
 import com.simon.tea.annotation.Cmd;
 import com.simon.tea.context.Context;
 import com.simon.tea.annotation.Module;
+import com.simon.tea.util.ClassUtil;
 import com.simon.tea.util.FileUtil;
+import com.simon.tea.util.ShellUtil;
 import com.simon.tea.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +19,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import me.zzp.am.Record;
 import org.apache.commons.lang3.RandomUtils;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import static com.simon.tea.Constant.BASE_CATALOG;
@@ -37,8 +39,13 @@ public class SystemProcessor {
 
     @Cmd(value = "ll", alias = "ls", describe = "查看当前模块下的文件")
     public void ll(Context context) {
-        context.getCfgList().forEach(Print::showSpace);
-        showLn("");
+        String module = context.secondWord();
+        if (StringUtils.hasText(module)) {
+            context.getCfgList(context.appendCatalog(module)).forEach(Print::showSpace);
+        }else{
+            context.getCfgList().forEach(Print::showSpace);
+        }
+        showLn();
     }
 
     @Cmd(value = "cd", describe = "进入对应的模块：cd db或者log或者其他")
@@ -48,7 +55,11 @@ public class SystemProcessor {
             if (context.isCfg(module)) {
                 context.addCatalog(module);
                 context.load();
-            } else {
+                context.setCurrentModule(module);
+                context.setCurrentPath(context.getCurrentPath() + "/" + module);
+            } else if(module.equals("..")){
+                quit(context);
+            } else{
                 showError("配置：" + module + " 不存在");
             }
         }
@@ -56,7 +67,7 @@ public class SystemProcessor {
 
     @Cmd(value = "quit", describe = "返回到上一层")
     public void quit(Context context) {
-        if(!context.getCatalog().equals(BASE_CATALOG)){
+        if(!context.getCurrentCatalog().equals(BASE_CATALOG)){
             context.unload();
             context.catalogQuit();
         }else{
@@ -83,18 +94,6 @@ public class SystemProcessor {
         showTable(cmdMap);
     }
 
-    @Cmd(value = "version", describe = "版本号")
-    public void version(Context context){
-        try {
-            Properties properties = new Properties();
-            properties.load(FileUtil.readFile(new File(
-                StringUtil.backLast(ClassLoader.getSystemResource("").getPath()) + "/maven-archiver/pom.properties")));
-            showLn(properties.get("version"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<Map<String, Object>> generateMapList(Integer num){
         List dataList = new ArrayList(num);
         for(int i=0;i<num;i++){
@@ -103,8 +102,8 @@ public class SystemProcessor {
         return dataList;
     }
 
-    public Map<String, Object> generateMap(Integer cnt){
-        Map<String, Object> data = new HashMap();
+    private Map<String, Object> generateMap(Integer cnt){
+        HashMap data = new HashMap();
         String str = "动媕娿你哦安定";
 //        String str = "sduowensdjofajdonfwejmdfolaujdoijalkejrowieksddfkujaowpieur";
         data.put("value", str.substring(RandomUtils.nextInt(0, str.length())));
@@ -112,4 +111,56 @@ public class SystemProcessor {
         data.put("describe", str.substring(RandomUtils.nextInt(0, str.length())));
         return data;
     }
+
+    @Cmd(value = "version", describe = "版本号")
+    public void version(Context context){
+        try {
+            Properties properties = new Properties();
+            properties.load(FileUtil.readFile(new File(
+                StringUtil.backLast(ClassUtil.classPath()) + "/maven-archiver/pom.properties")));
+            showLn(properties.get("version"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Cmd(value = "cat", describe = "查看文件内容")
+    public void cat(Context context) {
+        try {
+            String fileName = context.secondWord();
+            if (StringUtils.hasText(fileName)) {
+                String filePath = context.appendPath(fileName);
+                showLn(FileUtil.readFromFile(filePath));
+            }
+        } catch (IOException e) {
+            showError("文件没有找到");
+        }
+    }
+
+    @Cmd(value = "edit", describe = "修改文件内容，用法：edit fileName 则打开一个编辑框直接编辑")
+    public void edit(Context context){
+        String fileName = context.secondWord();
+        if (StringUtils.hasText(fileName)) {
+            ShellUtil.call("open -e " + context.getAbsoluteFile(fileName));
+        }
+    }
+
+    @Cmd(value = "create", alias = "touch", describe = "创建新的文件")
+    public void create(Context context) {
+        try {
+            String fileName = context.secondWord();
+            if (StringUtils.hasText(fileName)) {
+                String abFile = context.getAbsoluteFile(fileName);
+                if (!FileUtil.fileExist(abFile)) {
+                    FileUtil.createFile(abFile);
+                }else{
+                    showError("不能创建相同文件");
+                }
+            }
+            context.loadNewFile(fileName);
+        } catch (IOException e) {
+            showError("创建文件失败：" + e.getLocalizedMessage());
+        }
+    }
+
 }

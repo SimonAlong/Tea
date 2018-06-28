@@ -3,8 +3,8 @@ package com.simon.tea;
 import static com.simon.tea.Print.*;
 
 import com.simon.tea.context.Context;
+import com.simon.tea.util.StringUtil;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import static org.fusesource.jansi.Ansi.Color.*;
 
@@ -30,11 +30,13 @@ public class Screen {
     }
 
     private void showCatalog() {
-        show(context.getCatalog(), CYAN);
+        show(context.getCurrentCatalog(), CYAN);
         show("> ");
     }
 
-    Screen() {
+    Screen(String[] args) {
+        context.setInput(StringUtil.arrayToString(args));
         parser = new Parser(context);
+        parser.process();
     }
 }

@@ -31,8 +31,7 @@ public class StringUtil {
     public int length(String str){
         int m = 0;
         char arr[] = str.toCharArray();
-        for (int i = 0; i < arr.length; i++) {
-            char c = arr[i];
+        for (char c : arr) {
             if ((c >= 0x0391 && c <= 0xFFE5)) {
                 m = m + 2;
             } else if (c <= 0x00FF) {
@@ -41,4 +40,20 @@ public class StringUtil {
         }
         return m;
     }
+
+    public String valueOf(Object input){
+        if(null == input){
+            return "";
+        }
+        return String.valueOf(input);
+    }
+
+    public String arrayToString(String[] args){
+        StringBuilder sb = new StringBuilder();
+        for(String str : args){
+            sb.append(str).append(" ");
+        }
+        return sb.toString();
+    }
+
 }

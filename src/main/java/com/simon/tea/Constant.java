@@ -11,6 +11,6 @@ public interface Constant {
     String SYS_CMD = "tea";
 
     Charset BASE_CHARSET = Charset.forName("UTF-8");
-    String MODULE_PATH = "root".equals(System.getProperty("user.name")) ? "/var/tea/"
-        : System.getProperty("user.home") + "/.cache/tea/";
+    String MODULE_PATH = "root".equals(System.getProperty("user.name")) ? "/var/tea"
+        : System.getProperty("user.home") + "/.cache/tea";
 }

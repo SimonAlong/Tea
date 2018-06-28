@@ -18,18 +18,18 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class FileUtil {
-//    public File getFile(String fileName) throws IOException {
-//        File file = new File(fileName);
-//        if (!file.getParentFile().exists()) {
-//            file.getParentFile().mkdirs();
-//        }
-//        if (!file.exists()) {
-//            file.createNewFile();
-//        }
-//        file.setReadable(true);
-//        file.setWritable(true);
-//        return file;
-//    }
+    private File getFile(String fileName) throws IOException {
+        File file = new File(fileName);
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        file.setReadable(true);
+        file.setWritable(true);
+        return file;
+    }
 
     public void createFile(String fileName) throws IOException {
         File file = new File(fileName);
@@ -44,7 +44,8 @@ public class FileUtil {
         return file.getParentFile().exists() && file.exists();
     }
 
-    public void writeToFile(File file, String content) throws IOException {
+    public void writeToFile(String fileName, String content) throws IOException {
+        File file = getFile(fileName);
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(content.getBytes(Constant.BASE_CHARSET));
             outputStream.flush();
