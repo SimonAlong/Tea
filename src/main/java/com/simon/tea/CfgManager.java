@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  * @since 2018/6/25 下午10:05
  */
 @RequiredArgsConstructor(staticName = "of")
-public class AnalyseManager {
+public class CfgManager {
 
     @NonNull
     private Context context;

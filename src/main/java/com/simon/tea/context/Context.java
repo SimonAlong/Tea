@@ -3,14 +3,15 @@ package com.simon.tea.context;
 import static com.simon.tea.Constant.BASE_CATALOG;
 import static com.simon.tea.Constant.MODULE_PATH;
 
-import com.simon.tea.AnalyseManager;
+import com.simon.tea.CfgManager;
 import com.simon.tea.CmdHandler;
+import com.simon.tea.DBManager;
 import com.simon.tea.util.StringUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
-import org.springframework.cache.annotation.Cacheable;
+import me.zzp.am.Am;
 import org.springframework.util.StringUtils;
 
 /**
@@ -25,12 +26,14 @@ public class Context {
     private String currentPath = MODULE_PATH;
     private String input = "";
     private Boolean stop = false;
+    private Am am = new Am();
     //key 是当前拥有的命令
     private Map<String, CmdHandler> cmdHandlerMap = new HashMap<>();
-    private AnalyseManager manager;
+    private CfgManager cfgManager;
+    private DBManager dbManager;
 
     public boolean isCfg(String module) {
-        return manager.isCfg(module);
+        return cfgManager.isCfg(module);
     }
 
     /**
@@ -39,19 +42,19 @@ public class Context {
      * @return 配置文件名列表
      */
     public List<String> getCfgList() {
-        return manager.getCfgList();
+        return cfgManager.getCfgList();
     }
 
     public List<String> getCfgList(String catalog) {
-        return manager.getCfgList(catalog);
+        return cfgManager.getCfgList(catalog);
     }
 
     public void load() {
-        manager.loadCmd();
+        cfgManager.loadCmd();
     }
 
     public void unload() {
-        manager.unloadCmd();
+        cfgManager.unloadCmd();
     }
 
     public void addCatalog(String module) {
@@ -67,11 +70,21 @@ public class Context {
     }
 
     public String getFilePath(String fileName) {
-        return manager.getFilePath(fileName);
+        return cfgManager.getFilePath(fileName);
     }
 
     public void loadNewFile(String fileName) {
-        manager.addNewCfg(fileName);
+        cfgManager.addNewCfg(fileName);
+    }
+
+    public void startDb(String jdbcUrl, String userName, String password, String fileName){
+        am = null;
+        am = new Am();
+        am.connect(jdbcUrl, userName, password).as(fileName);
+    }
+
+    public void show(){
+        dbManager.show();
     }
 
     /**

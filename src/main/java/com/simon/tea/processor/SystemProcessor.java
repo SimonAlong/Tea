@@ -37,7 +37,7 @@ public class SystemProcessor {
         showLn("识别命令：tea");
     }
 
-    @Cmd(value = "ll", alias = "ls", describe = "查看当前模块下的文件")
+    @Cmd(value = "ll", alias = "ls -l", describe = "查看当前模块下的文件")
     public void ll(Context context) {
         String module = context.secondWord();
         if (StringUtils.hasText(module)) {
@@ -87,10 +87,10 @@ public class SystemProcessor {
 
     @Cmd(value = "help", describe = "用于显示当前命令的用法")
     public void help(Context context) {
-        List<Map<String, Object>> cmdMap = context.getCmdHandlerMap().values().stream()
+        List<Record> cmdMap = context.getCmdHandlerMap().values().stream()
             .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
             .collect(Collectors.toList());
-//        showTable(generateMapList(89), 9);    //测试数据用
+//        showTable(generateMapList(189), 1);    //测试数据用
         showTable(cmdMap);
     }
 

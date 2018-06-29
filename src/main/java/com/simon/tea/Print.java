@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import lombok.val;
+import me.zzp.am.Record;
 import org.fusesource.jansi.Ansi.Color;
 
 /**
@@ -96,21 +97,25 @@ public class Print {
     private static final Integer COLUMN_FILL_TIP = 2;
     private static Integer PAGE_SIZE = 10;
 
-    public void showTable(List<Map<String, Object>> bodies) {
+//    public void showTable(List<Map<String, Object>> bodies) {
+//        showTable(bodies, 1, PAGE_SIZE);
+//    }
+
+    public void showTable(List<Record> bodies) {
         showTable(bodies, 1, PAGE_SIZE);
     }
 
-    public void showTable(List<Map<String, Object>> bodies, Integer pageIndex) {
+    public void showTable(List<Record> bodies, Integer pageIndex) {
         showTable(bodies, pageIndex, PAGE_SIZE);
     }
 
-    public void showTable(List<Map<String, Object>> bodies, Integer pageIndex, Integer pageSize){
+    public void showTable(List<Record> bodies, Integer pageIndex, Integer pageSize){
         if(!bodies.isEmpty()){
             Integer totalSize = bodies.size();
             Integer startIndex = (pageIndex == 0 ? 0 : pageIndex - 1) * pageSize;
             Integer endIndex = startIndex + pageSize;
-            if(startIndex > totalSize){
-                showError("索引超过数组");
+            if (startIndex > totalSize) {
+                showError("索引超过数组，总个数：" + totalSize);
                 return;
             }
             val splitBodies = bodies.subList(startIndex, (endIndex > totalSize ? totalSize : endIndex));
@@ -127,7 +132,7 @@ public class Print {
         }
     }
 
-    private LinkedList<String> preHandleHead(List<Map<String, Object>> bodies){
+    private LinkedList<String> preHandleHead(List<Record> bodies){
         assert !bodies.isEmpty();
         val headList = new LinkedList<String>(bodies.get(0).keySet());
         Collections.reverse(headList);
@@ -168,7 +173,7 @@ public class Print {
      * @param columnLengthList  表列的最大长度列表
      * @param width             表一行长度
      */
-    private void showTableBody(List<String> headList, Integer startIndex, List<Map<String, Object>> bodies, List<Integer> columnLengthList,
+    private void showTableBody(List<String> headList, Integer startIndex, List<Record> bodies, List<Integer> columnLengthList,
         Integer width) {
         for (int line = 0; line < bodies.size(); line++) {
             showValue(columnLengthList, 0, line + startIndex + 1, GREEN);
@@ -209,32 +214,38 @@ public class Print {
      * @param pageIndex 数据所在页面
      * @param bodies    分页后的数据体
      */
-    private void showTableCnt(Integer totalSize, Integer pageIndex, List<Map<String, Object>> bodies) {
-        showSpace("总个数：" + totalSize + "         ");
+    private void showTableCnt(Integer totalSize, Integer pageIndex, List<Record> bodies) {
+        String totalSizeShow = "总个数：" + totalSize + "         ";
+        showSpace(totalSizeShow);
         Integer pageNum = totalSize / PAGE_SIZE + (totalSize % PAGE_SIZE > 0 ? 1 : 0);
         boolean omit = false;
+        int pageShowNum = 0;
         for (int i = 1; i <= pageNum; i++) {
-            if (i == pageIndex) {
-                showSpace(i, GREEN);
+            if((i != pageIndex) && (i == 1 || (i < pageIndex && i + 2 >= pageIndex) || (i > pageIndex && i - 2 <= pageIndex) || i == pageNum)){
+                showSpace(i);
+                pageShowNum += (String.valueOf(i).length() + 3);
                 continue;
             }
-            if (i <= 6 || i == pageNum) {
-                showSpace(i);
-            } else {
-                if(!omit) {
-                    showSpace("...");
-                    omit = true;
-                }
+            if (i == pageIndex) {
+                showSpace(i, GREEN);
+                pageShowNum += (String.valueOf(i).length() + 3);
+                omit = false;
+                continue;
+            }
+            if (!omit) {
+                showSpace("...");
+                pageShowNum += 6;
+                omit = true;
             }
         }
         showLn();
-        showNumStrLn(53, "-", GREEN);
+        showNumStrLn(StringUtil.length(totalSizeShow) - 1 + pageShowNum, "-", GREEN);
     }
 
     /**
      * 计算一行的最长长度
      */
-    private Integer generateWidth(List<Map<String, Object>> bodies, List<String> headList, Integer startIndex) {
+    private Integer generateWidth(List<Record> bodies, List<String> headList, Integer startIndex) {
         AtomicReference<Integer> width = new AtomicReference<>(0);
         //每列填充一个tip
         computeColumnMaxLength(bodies, headList, startIndex).forEach(l -> width.updateAndGet(v -> v + l + COLUMN_FILL_TIP));
@@ -250,7 +261,7 @@ public class Print {
      * @param startIndex 数据起始点
      * @return 最大长度列表
      */
-    private List<Integer> computeColumnMaxLength(List<Map<String, Object>> bodies, List<String> headList, Integer startIndex) {
+    private List<Integer> computeColumnMaxLength(List<Record> bodies, List<String> headList, Integer startIndex) {
         List<Integer> columnMaxLengthList = new ArrayList<>(headList.size()).stream().map(h -> 0)
             .collect(Collectors.toList());
         for (int i = 0; i < headList.size(); i++) {
@@ -276,7 +287,7 @@ public class Print {
             show(word, RED);
         }else{
             //todo 其他类型判断
-            show(word, WHITE);
+            show(word);
         }
     }
 }

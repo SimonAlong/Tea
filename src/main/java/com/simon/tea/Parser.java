@@ -4,7 +4,6 @@ import com.simon.tea.annotation.Cmd;
 import com.simon.tea.annotation.Module;
 import com.simon.tea.context.Context;
 import com.simon.tea.meta.CmdEntity;
-import com.simon.tea.processor.Db;
 import com.simon.tea.processor.SystemProcessor;
 import com.simon.tea.util.ClassUtil;
 import java.lang.reflect.Method;
@@ -25,10 +24,10 @@ import org.springframework.util.ClassUtils;
 @Accessors(chain = true)
 public class Parser {
 
-    private AnalyseManager analyseManager;
+    private CfgManager cfgManager;
 
     public void process() {
-        analyseManager.analyse();
+        cfgManager.analyse();
     }
 
     Parser(Context context) {
@@ -41,15 +40,15 @@ public class Parser {
     }
 
     private void initManager(Context context) {
-        analyseManager = AnalyseManager.of(context);
-        context.setManager(analyseManager);
+        context.setCfgManager(CfgManager.of(context));
+        context.setDbManager(DBManager.of(context));
     }
 
     private void initCmdMap() {
         Set<Class<?>> classes = ClassUtil.readClsFromPath(ClassUtils.classPackageAsResourcePath(SystemProcessor.class));
         classes.forEach(cls -> {
             Module module = cls.getAnnotation(Module.class);
-            analyseManager.addModule(module, parseCls(module, cls));
+            cfgManager.addModule(module, parseCls(module, cls));
         });
     }
 
