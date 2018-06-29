@@ -95,7 +95,7 @@ public class Print {
      * 每列数据后面填充的空格
      */
     private static final Integer COLUMN_FILL_TIP = 2;
-    private static Integer PAGE_SIZE = 10;
+    public static Integer PAGE_SIZE = 10;
 
 //    public void showTable(List<Map<String, Object>> bodies) {
 //        showTable(bodies, 1, PAGE_SIZE);
@@ -126,7 +126,7 @@ public class Print {
 
             showTableHead(headList, columnLengthList, width);
             showTableBody(headList, startIndex, splitBodies, columnLengthList, width);
-            showTableCnt(totalSize, pageIndex, splitBodies);
+            showTableCnt(width, totalSize, pageIndex, splitBodies);
         }else{
             showWarning("数据为空");
         }
@@ -214,7 +214,7 @@ public class Print {
      * @param pageIndex 数据所在页面
      * @param bodies    分页后的数据体
      */
-    private void showTableCnt(Integer totalSize, Integer pageIndex, List<Record> bodies) {
+    private void showTableCnt(Integer width, Integer totalSize, Integer pageIndex, List<Record> bodies) {
         String totalSizeShow = "总个数：" + totalSize + "         ";
         showSpace(totalSizeShow);
         Integer pageNum = totalSize / PAGE_SIZE + (totalSize % PAGE_SIZE > 0 ? 1 : 0);

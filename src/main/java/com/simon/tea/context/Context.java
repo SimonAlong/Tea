@@ -84,7 +84,7 @@ public class Context {
     }
 
     public void show(){
-        dbManager.show();
+        dbManager.all();
     }
 
     /**
@@ -102,6 +102,7 @@ public class Context {
      */
     public void catalogQuit() {
         currentCatalog = StringUtil.backLast(currentCatalog);
+        currentPath = StringUtil.backLast(currentPath);
     }
 
     public String firstWord() {

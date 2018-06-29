@@ -40,7 +40,8 @@ public class Parser {
     }
 
     private void initManager(Context context) {
-        context.setCfgManager(CfgManager.of(context));
+        cfgManager = CfgManager.of(context);
+        context.setCfgManager(cfgManager);
         context.setDbManager(DBManager.of(context));
     }
 

@@ -60,7 +60,13 @@ public class FileUtil {
     public String readFromFile(String filePath) throws IOException {
         File file = new File(filePath);
         BufferedReader publicReader = readFile(file);
-        return publicReader.readLine();
+        StringBuilder sb = new StringBuilder();
+        String temp;
+        while ((temp = publicReader.readLine()) != null) {
+            sb.append(temp).append("\n");
+        }
+        publicReader.close();
+        return sb.toString();
     }
 
     /**

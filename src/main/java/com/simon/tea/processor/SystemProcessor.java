@@ -1,6 +1,5 @@
 package com.simon.tea.processor;
 
-import com.simon.tea.Constant;
 import com.simon.tea.Print;
 import com.simon.tea.annotation.Cmd;
 import com.simon.tea.context.Context;
@@ -35,6 +34,22 @@ public class SystemProcessor {
     @Cmd(value = "tea", describe = "系统命令：tea db或者log或者其他等模块，这样直接进入对应的模块")
     public void tea(Context context) {
         showLn("识别命令：tea");
+    }
+
+    @Cmd(value = "usage", describe = "用于展示某个命令的用法: usage show或者load")
+    public void usage(Context context){
+        show("识别命令：usage");
+        context.show();
+    }
+
+    @Cmd(value = "system config", describe = "展示系统的配置")
+    public void systemConfig(Context context) {
+        showLn("识别命令：system config");
+    }
+
+    @Cmd(value = "set", describe = "修改系统的配置，用法：set xx=yy,mm=nn,等等")
+    public void set(Context context) {
+        showLn("识别命令：set");
     }
 
     @Cmd(value = "ll", alias = "ls -l", describe = "查看当前模块下的文件")
@@ -133,7 +148,7 @@ public class SystemProcessor {
                 showLn(FileUtil.readFromFile(filePath));
             }
         } catch (IOException e) {
-            showError("文件没有找到");
+            showError("文件没有找到："+e.getLocalizedMessage());
         }
     }
 
