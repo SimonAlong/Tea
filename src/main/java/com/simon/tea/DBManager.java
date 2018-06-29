@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.zzp.am.Am;
+import me.zzp.am.Ao;
 import me.zzp.am.Record;
 
 /**
@@ -16,15 +17,20 @@ public class DBManager {
 
     @NonNull
     private Context context;
-    private Am am;
+    private Ao ao;
     private String fileName;
+
+    public void startDb(String jdbcUrl, String userName, String password, String fileName){
+        ao = null;
+        ao = Ao.open(jdbcUrl, userName, password);
+    }
 
     /**
      * select * from tableName;
      */
     public List<Record> all(String sql){
         fresh();
-        return am.all(fileName, sql);
+        return ao.all(sql);
     }
 
     /**
@@ -32,17 +38,16 @@ public class DBManager {
      */
     public Record one(String sql){
         fresh();
-        return am.one(fileName, sql);
+        return ao.one(sql);
     }
 
-    public Integer count(){
+    public Integer count(String sql){
         fresh();
-        return 0;
-//        am.execute()
+        String countSql = "select count(1) " + sql.substring(sql.indexOf("from " + context.secondWord()));
+        return ao.value(Integer.class, countSql);
     }
 
     public void fresh(){
-        am = context.getAm();
         fileName = context.getCurrentModule();
     }
 }

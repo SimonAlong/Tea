@@ -97,45 +97,72 @@ public class Print {
     private static final Integer COLUMN_FILL_TIP = 2;
     public static Integer PAGE_SIZE = 10;
 
-//    public void showTable(List<Map<String, Object>> bodies) {
-//        showTable(bodies, 1, PAGE_SIZE);
-//    }
-
     public void showTable(List<Record> bodies) {
-        showTable(bodies, 1, PAGE_SIZE);
+        showTable(bodies, bodies.size(), 1, 1, true);
     }
 
-    public void showTable(List<Record> bodies, Integer pageIndex) {
-        showTable(bodies, pageIndex, PAGE_SIZE);
-    }
-
-    public void showTable(List<Record> bodies, Integer pageIndex, Integer pageSize){
+    /**
+     * 根据页签位置展示数据
+     * @param bodies    数据体
+     * @param totalSize 数据总个数
+     * @param pageIndex 数据页面索引
+     * @param showPage  是否展示表的个数和页面索引
+     */
+    public void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex, boolean showPage){
         if(!bodies.isEmpty()){
-            Integer totalSize = bodies.size();
-            Integer startIndex = (pageIndex == 0 ? 0 : pageIndex - 1) * pageSize;
-            Integer endIndex = startIndex + pageSize;
             if (startIndex > totalSize) {
                 showError("索引超过数组，总个数：" + totalSize);
                 return;
             }
-            val splitBodies = bodies.subList(startIndex, (endIndex > totalSize ? totalSize : endIndex));
-            val headList = preHandleHead(splitBodies);
-
-            val columnLengthList = computeColumnMaxLength(splitBodies, headList, startIndex);
-            Integer width = generateWidth(splitBodies, headList, startIndex);
+            val headList = preHandleHead(bodies);
+            val columnLengthList = computeColumnMaxLength(bodies, headList, startIndex);
+            Integer width = generateWidth(bodies, headList, startIndex);
 
             showTableHead(headList, columnLengthList, width);
-            showTableBody(headList, startIndex, splitBodies, columnLengthList, width);
-            showTableCnt(width, totalSize, pageIndex, splitBodies);
+            showTableBody(headList, startIndex, bodies, columnLengthList, width);
+            if(showPage) {
+                showTableCnt(width, totalSize, pageIndex, bodies);
+            }
         }else{
             showWarning("数据为空");
         }
     }
 
+    /**
+     * 根据数据范围打印
+     * @param bodies     数据体
+     * @param totalSize  数据总个数
+     * @param startIndex 数据开始位置
+     * @param endIndex   数据结束位置
+     */
+//    public void showTable(List<Record> bodies, Integer totalSize, Integer startIndex, Integer endIndex){
+//        if(!bodies.isEmpty()){
+//            if (startIndex > totalSize) {
+//                showError("索引超过数组，总个数：" + totalSize);
+//                return;
+//            }
+//            val splitBodies = bodies.subList(startIndex, (endIndex > totalSize ? totalSize : endIndex));
+//            val headList = preHandleHead(splitBodies);
+//
+//            val columnLengthList = computeColumnMaxLength(splitBodies, headList, startIndex);
+//            Integer width = generateWidth(splitBodies, headList, startIndex);
+//
+//            showTableHead(headList, columnLengthList, width);
+//            showTableBody(headList, startIndex, splitBodies, columnLengthList, width);
+//        }else{
+//            showWarning("数据为空");
+//        }
+//    }
+
+    /**
+     * 头部预处理，添加列index
+     * @param bodies 数据体
+     * @return       增加index列之后的头列表
+     */
     private LinkedList<String> preHandleHead(List<Record> bodies){
         assert !bodies.isEmpty();
         val headList = new LinkedList<String>(bodies.get(0).keySet());
-        Collections.reverse(headList);
+//        Collections.reverse(headList);
         headList.addFirst("index");
         return headList;
     }
@@ -176,14 +203,15 @@ public class Print {
     private void showTableBody(List<String> headList, Integer startIndex, List<Record> bodies, List<Integer> columnLengthList,
         Integer width) {
         for (int line = 0; line < bodies.size(); line++) {
-            showValue(columnLengthList, 0, line + startIndex + 1, GREEN);
+            showValue(columnLengthList, 0, line + startIndex, GREEN);
             for (int columnIndex = 1; columnIndex < headList.size(); columnIndex++) {
                 String value = String.valueOf(bodies.get(line).get(headList.get(columnIndex)));
                 showValue(columnLengthList, columnIndex, value);
             }
             showLn();
-            showNumStrLn(width, "-", WHITE);
+//            showNumStrLn(width, "-", WHITE);
         }
+        showNumStrLn(width, "-", GREEN);
     }
 
     /**
@@ -213,8 +241,10 @@ public class Print {
      * @param totalSize 数据总个数
      * @param pageIndex 数据所在页面
      * @param bodies    分页后的数据体
+     * @param showPage  是否展示表的个数和页面索引
      */
     private void showTableCnt(Integer width, Integer totalSize, Integer pageIndex, List<Record> bodies) {
+
         String totalSizeShow = "总个数：" + totalSize + "         ";
         showSpace(totalSizeShow);
         Integer pageNum = totalSize / PAGE_SIZE + (totalSize % PAGE_SIZE > 0 ? 1 : 0);

@@ -1,6 +1,8 @@
 package com.simon.tea.util;
 
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -54,6 +56,15 @@ public class StringUtil {
             sb.append(str).append(" ");
         }
         return sb.toString();
+    }
+
+    /**
+     * 全是数字
+     */
+    public static boolean allNumber(String content){
+        String regex="^[0-9]*$";
+        Matcher m=Pattern.compile(regex).matcher(content);
+        return m.matches();
     }
 
 }

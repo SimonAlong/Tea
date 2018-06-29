@@ -34,8 +34,7 @@ public class Screen {
         show("> ");
     }
 
-    Screen(String[] args) {
-        context.setInput(StringUtil.arrayToString(args));
+    Screen(){
         parser = new Parser(context);
         parser.process();
     }

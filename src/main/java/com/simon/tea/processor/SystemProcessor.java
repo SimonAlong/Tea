@@ -39,7 +39,7 @@ public class SystemProcessor {
     @Cmd(value = "usage", describe = "用于展示某个命令的用法: usage show或者load")
     public void usage(Context context){
         show("识别命令：usage");
-        context.show();
+//        context.show();
     }
 
     @Cmd(value = "system config", describe = "展示系统的配置")
@@ -105,11 +105,11 @@ public class SystemProcessor {
         List<Record> cmdMap = context.getCmdHandlerMap().values().stream()
             .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
             .collect(Collectors.toList());
-//        showTable(generateMapList(189), 1);    //测试数据用
-        showTable(cmdMap);
+        showTable(generateMapList(189));    //测试数据用
+//        showTable(cmdMap, cmdMap.size());
     }
 
-    public List<Map<String, Object>> generateMapList(Integer num){
+    public List<Record> generateMapList(Integer num){
         List dataList = new ArrayList(num);
         for(int i=0;i<num;i++){
             dataList.add(generateMap(num));
@@ -177,5 +177,4 @@ public class SystemProcessor {
             showError("创建文件失败：" + e.getLocalizedMessage());
         }
     }
-
 }

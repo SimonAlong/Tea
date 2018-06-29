@@ -26,7 +26,6 @@ public class Context {
     private String currentPath = MODULE_PATH;
     private String input = "";
     private Boolean stop = false;
-    private Am am = new Am();
     //key 是当前拥有的命令
     private Map<String, CmdHandler> cmdHandlerMap = new HashMap<>();
     private CfgManager cfgManager;
@@ -77,16 +76,6 @@ public class Context {
         cfgManager.addNewCfg(fileName);
     }
 
-    public void startDb(String jdbcUrl, String userName, String password, String fileName){
-        am = null;
-        am = new Am();
-        am.connect(jdbcUrl, userName, password).as(fileName);
-    }
-
-    public void show(){
-        dbManager.all();
-    }
-
     /**
      * 根据当前目录返回文件的绝对文件名
      * @param fileName 文件名
@@ -95,7 +84,6 @@ public class Context {
     public String getAbsoluteFile(String fileName){
         return currentPath + "/" + fileName;
     }
-
 
     /**
      * 返回上一层目录
