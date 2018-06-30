@@ -38,6 +38,7 @@ public class CfgManager {
 
     void analyse() {
         Optional.ofNullable(context.getCmdHandlerMap().get(context.firstWord())).map(h -> {
+            context.setTakeTime();
             h.handle(context);
             return "";
         }).orElseGet(() -> {

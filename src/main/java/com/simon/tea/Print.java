@@ -3,6 +3,7 @@ package com.simon.tea;
 import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
+import com.simon.tea.context.Context;
 import com.simon.tea.util.StringUtil;
 import com.sun.org.apache.regexp.internal.RE;
 import java.util.ArrayList;
@@ -97,8 +98,8 @@ public class Print {
     private static final Integer COLUMN_FILL_TIP = 2;
     public static Integer PAGE_SIZE = 10;
 
-    public void showTable(List<Record> bodies) {
-        showTable(bodies, bodies.size(), 1, 1, true);
+    public void showTable(List<Record> bodies, Context context) {
+        showTable(bodies, bodies.size(), 1, 0, context);
     }
 
     /**
@@ -106,53 +107,21 @@ public class Print {
      * @param bodies    数据体
      * @param totalSize 数据总个数
      * @param pageIndex 数据页面索引
-     * @param showPage  是否展示表的个数和页面索引
+     * @param context   数据上下文
      */
-    public void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex, boolean showPage){
+    public void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex, Context context){
         if(!bodies.isEmpty()){
-//            if (startIndex > totalSize) {
-//                showError("索引超过数组，总个数：" + totalSize);
-//                return;
-//            }
             val headList = preHandleHead(bodies);
             val columnLengthList = computeColumnMaxLength(bodies, headList, startIndex);
             Integer width = generateWidth(bodies, headList, startIndex);
 
             showTableHead(headList, columnLengthList, width);
             showTableBody(headList, startIndex, bodies, columnLengthList, width);
-            if(showPage) {
-                showTableCnt(width, totalSize, pageIndex, bodies);
-            }
-        }else{
+            showTableCnt(width, totalSize, pageIndex, bodies, context);
+        } else {
             showWarning("数据为空");
         }
     }
-
-    /**
-     * 根据数据范围打印
-     * @param bodies     数据体
-     * @param totalSize  数据总个数
-     * @param startIndex 数据开始位置
-     * @param endIndex   数据结束位置
-     */
-//    public void showTable(List<Record> bodies, Integer totalSize, Integer startIndex, Integer endIndex){
-//        if(!bodies.isEmpty()){
-//            if (startIndex > totalSize) {
-//                showError("索引超过数组，总个数：" + totalSize);
-//                return;
-//            }
-//            val splitBodies = bodies.subList(startIndex, (endIndex > totalSize ? totalSize : endIndex));
-//            val headList = preHandleHead(splitBodies);
-//
-//            val columnLengthList = computeColumnMaxLength(splitBodies, headList, startIndex);
-//            Integer width = generateWidth(splitBodies, headList, startIndex);
-//
-//            showTableHead(headList, columnLengthList, width);
-//            showTableBody(headList, startIndex, splitBodies, columnLengthList, width);
-//        }else{
-//            showWarning("数据为空");
-//        }
-//    }
 
     /**
      * 头部预处理，添加列index
@@ -162,7 +131,6 @@ public class Print {
     private LinkedList<String> preHandleHead(List<Record> bodies){
         assert !bodies.isEmpty();
         val headList = new LinkedList<String>(bodies.get(0).keySet());
-//        Collections.reverse(headList);
         headList.addFirst("index");
         return headList;
     }
@@ -209,7 +177,6 @@ public class Print {
                 showValue(columnLengthList, columnIndex, value);
             }
             showLn();
-//            showNumStrLn(width, "-", WHITE);
         }
         showNumStrLn(width, "-", GREEN);
     }
@@ -241,11 +208,10 @@ public class Print {
      * @param totalSize 数据总个数
      * @param pageIndex 数据所在页面
      * @param bodies    分页后的数据体
-     * @param showPage  是否展示表的个数和页面索引
+     * @param context   数据上下文
      */
-    private void showTableCnt(Integer width, Integer totalSize, Integer pageIndex, List<Record> bodies) {
-
-        String totalSizeShow = "总个数：" + totalSize + "         ";
+    private void showTableCnt(Integer width, Integer totalSize, Integer pageIndex, List<Record> bodies, Context context) {
+        String totalSizeShow = "总数：" + totalSize + " 个， 耗时："+context.getTakeTime()+" ms，  ";
         showSpace(totalSizeShow);
         Integer pageNum = totalSize / PAGE_SIZE + (totalSize % PAGE_SIZE > 0 ? 1 : 0);
         boolean omit = false;

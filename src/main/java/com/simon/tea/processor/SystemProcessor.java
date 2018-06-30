@@ -105,7 +105,7 @@ public class SystemProcessor {
         List<Record> cmdMap = context.getCmdHandlerMap().values().stream()
             .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
             .collect(Collectors.toList());
-        showTable(generateMapList(189));    //测试数据用
+        showTable(generateMapList(189), context);    //测试数据用
 //        showTable(cmdMap, cmdMap.size());
     }
 

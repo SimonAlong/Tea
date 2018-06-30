@@ -77,6 +77,14 @@ public class Context {
         cfgManager.addNewCfg(fileName);
     }
 
+    public void setTakeTime(){
+        startTime = System.currentTimeMillis();
+    }
+
+    public long getTakeTime(){
+        return System.currentTimeMillis() - startTime;
+    }
+
     /**
      * 根据当前目录返回文件的绝对文件名
      * @param fileName 文件名

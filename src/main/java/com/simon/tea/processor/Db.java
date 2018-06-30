@@ -54,10 +54,15 @@ public class Db {
                 showSql = sql + " limit 0," + PAGE_SIZE;
                 totalCnd = db.count(sql);
             }
-            showTable(db.all(showSql), totalCnd, pageIndex, showStartIndex, true);
+            showTable(db.all(showSql), totalCnd, pageIndex, showStartIndex, context);
         }
     }
 
+    /**
+     * 获取要展示哪一页
+     * @param otherMsg  后面的配置信息
+     * @return  要显示的页数
+     */
     private int getPageIndex(String otherMsg){
         if(otherMsg.contains(" -p ")){
             int index = otherMsg.indexOf(" -p ");
