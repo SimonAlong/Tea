@@ -110,10 +110,10 @@ public class Print {
      */
     public void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex, boolean showPage){
         if(!bodies.isEmpty()){
-            if (startIndex > totalSize) {
-                showError("索引超过数组，总个数：" + totalSize);
-                return;
-            }
+//            if (startIndex > totalSize) {
+//                showError("索引超过数组，总个数：" + totalSize);
+//                return;
+//            }
             val headList = preHandleHead(bodies);
             val columnLengthList = computeColumnMaxLength(bodies, headList, startIndex);
             Integer width = generateWidth(bodies, headList, startIndex);
@@ -203,7 +203,7 @@ public class Print {
     private void showTableBody(List<String> headList, Integer startIndex, List<Record> bodies, List<Integer> columnLengthList,
         Integer width) {
         for (int line = 0; line < bodies.size(); line++) {
-            showValue(columnLengthList, 0, line + startIndex, GREEN);
+            showValue(columnLengthList, 0, line + startIndex + 1, GREEN);
             for (int columnIndex = 1; columnIndex < headList.size(); columnIndex++) {
                 String value = String.valueOf(bodies.get(line).get(headList.get(columnIndex)));
                 showValue(columnLengthList, columnIndex, value);

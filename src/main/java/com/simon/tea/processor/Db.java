@@ -26,26 +26,35 @@ public class Db {
     public void showTableData(Context context){
         String tableName = context.secondWord();
         if (StringUtils.hasText(tableName)) {
-            int pageIndex = 1, startIndex, endIndex, showStartIndex = 1;
+            int pageIndex = 1, startIndex, showSize, totalCnd, showStartIndex = 0, pageBeforeNum;
             String otherMsg = context.getInput().substring("show ".length() + tableName.length());
             String sql = "select * from " + tableName;
-            String showSql = sql, actSql = sql;
+            String showSql = sql;
+
+            DBManager db = context.getDbManager();
             if (!StringUtils.isEmpty(otherMsg)) {//解析 show tableName
                 pageIndex = getPageIndex(otherMsg);
                 startIndex = getRangeStart(otherMsg);
-//                endIndex = getRangeEnd(otherMsg);
+                showSize = getRangeSize(otherMsg);
+                pageBeforeNum = (pageIndex == 0 ? 0 : pageIndex - 1) * PAGE_SIZE;
 
-                showStartIndex = startIndex + (pageIndex == 0 ? 0 : pageIndex - 1) * PAGE_SIZE;
-
-                showSql += " limit " + showStartIndex + "," + String.valueOf(showStartIndex + PAGE_SIZE);
-//                if(0 != startIndex && 0 != endIndex){
-//                    actSql += " limit " + startIndex + "," + endIndex;
-//                }
+                showStartIndex = startIndex + pageBeforeNum;
+                if(0 != showSize){//有 -lm a,b 形式
+                    if(showSize < pageBeforeNum){
+                        showError("页签索引过界：总页数为："+(showSize/PAGE_SIZE + 1)+", 页签为："+pageIndex);
+                        return;
+                    }
+                    showSql += " limit " + showStartIndex + "," + Math.min(showSize - pageBeforeNum, PAGE_SIZE);
+                    totalCnd = showSize;
+                }else{ //有 -p pageNum 形式
+                    showSql += " limit " + showStartIndex + "," + PAGE_SIZE;
+                    totalCnd = db.count(sql);
+                }
             }else{
                 showSql = sql + " limit 0," + PAGE_SIZE;
+                totalCnd = db.count(sql);
             }
-            DBManager db = context.getDbManager();
-            showTable(db.all(showSql), db.count(actSql), pageIndex, showStartIndex, true);
+            showTable(db.all(showSql), totalCnd, pageIndex, showStartIndex, true);
         }
     }
 
@@ -103,24 +112,24 @@ public class Db {
         return 0;
     }
 
-//    /**
-//     * 获取 -lm 后面的起始位置
-//     * @param otherMsg 后面的配置信息
-//     * @return 0 没有 -lm a,b 这种格式，或者语法不正确
-//     */
-//    private int getRangeEnd(String otherMsg){
-//        String rangeStr = getRangeStr(otherMsg);
-//        if(null != rangeStr) {
-//            int spotIndex = rangeStr.indexOf(',');
-//            if(spotIndex != -1){
-//                return Integer.valueOf(rangeStr.substring(spotIndex + 1));
-//            }else{
-//                showError("语法有错误: -lm 后面跟的是两个逗号隔开的数字，如: -lm 2,10");
-//                return 0;
-//            }
-//        }
-//        return 0;
-//    }
+    /**
+     * 获取 -lm 后面的显示数据的大小
+     * @param otherMsg 后面的配置信息
+     * @return 0 没有 -lm a,b 这种格式，或者语法不正确
+     */
+    private int getRangeSize(String otherMsg){
+        String rangeStr = getRangeStr(otherMsg);
+        if(null != rangeStr) {
+            int spotIndex = rangeStr.indexOf(',');
+            if(spotIndex != -1){
+                return Integer.valueOf(rangeStr.substring(spotIndex + 1));
+            }else{
+                showError("语法有错误: -lm 后面跟的是两个逗号隔开的数字，如: -lm 2,10");
+                return 0;
+            }
+        }
+        return 0;
+    }
 
     @Usage(target = "show")
     public Record usageOfShow(){

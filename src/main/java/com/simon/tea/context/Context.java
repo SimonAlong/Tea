@@ -26,6 +26,7 @@ public class Context {
     private String currentPath = MODULE_PATH;
     private String input = "";
     private Boolean stop = false;
+    private long startTime;
     //key 是当前拥有的命令
     private Map<String, CmdHandler> cmdHandlerMap = new HashMap<>();
     private CfgManager cfgManager;
