@@ -1,5 +1,6 @@
 package com.simon.tea;
 
+import static com.simon.tea.Constant.DEFAULT_CMD;
 import static com.simon.tea.Constant.SYS_CMD;
 import static com.simon.tea.Print.*;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 /**
  * 命令分析和执行管理器
@@ -31,8 +33,10 @@ public class CfgManager {
 
     @NonNull
     private Context context;
-    //key 是目录， value的key 是具体的命令如：db/log
+    //key 是目录， value的key 是具体的命令如：show/find
     private Map<String, Map<String, CmdHandler>> moduleCmdMap = new HashMap<>();
+    //key 是目录，value 是每个目录模块中的默认命令
+    private Map<String, CmdHandler> moduleDefaultMap = new HashMap<>();
     //key 是目录，value是对应目录下的配置集合
     private Map<String, List<CfgPath>> configMap = new HashMap<>();
 
@@ -41,10 +45,14 @@ public class CfgManager {
             context.setTakeTime();
             h.handle(context);
             return "";
+        }).orElseGet(() -> Optional.ofNullable(moduleDefaultMap.get(context.getCurrentCatalog())).map(h -> {
+            context.setTakeTime();
+            h.handle(context);
+            return "";
         }).orElseGet(() -> {
             showCmdError(context.getInput());
             return null;
-        });
+        }));
     }
 
     public void loadCmd() {
@@ -87,6 +95,10 @@ public class CfgManager {
             moduleCmdMap.putIfAbsent(context.appendCatalog(module.name()), cmdMap);
             loadSysCfg(module.name());
             loadModuleCfg(module.name());
+
+            //读入默认配置命令
+            Optional.ofNullable(cmdMap.get(DEFAULT_CMD))
+                .map(cmd -> moduleDefaultMap.putIfAbsent(context.appendCatalog(module.name()), cmd));
         }
     }
 

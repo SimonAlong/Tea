@@ -96,10 +96,15 @@ public class Print {
      * 每列数据后面填充的空格
      */
     private static final Integer COLUMN_FILL_TIP = 2;
-    public static Integer PAGE_SIZE = 10;
+    public static Integer PAGE_SIZE = 20;
 
     public void showTable(List<Record> bodies, Context context) {
         showTable(bodies, bodies.size(), 1, 0, context);
+    }
+
+    public void showTableList(List<String> bodies, String column, Context context) {
+        List<Record> columns = bodies.stream().map(data->Record.of(column, data)).collect(Collectors.toList());
+        showTable(columns, bodies.size(), 1, 0, context);
     }
 
     /**
@@ -112,12 +117,17 @@ public class Print {
     public void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex, Context context){
         if(!bodies.isEmpty()){
             val headList = preHandleHead(bodies);
-            val columnLengthList = computeColumnMaxLength(bodies, headList, startIndex);
-            Integer width = generateWidth(bodies, headList, startIndex);
+            Integer endIndex = startIndex + PAGE_SIZE;
+            List<Record> splitBodies = bodies;
+            if(bodies.size() > PAGE_SIZE) {
+                splitBodies = bodies.subList(startIndex, Math.min(endIndex, totalSize));
+            }
+            val columnLengthList = computeColumnMaxLength(splitBodies, headList, startIndex);
+            Integer width = generateWidth(splitBodies, headList, startIndex);
 
             showTableHead(headList, columnLengthList, width);
-            showTableBody(headList, startIndex, bodies, columnLengthList, width);
-            showTableCnt(width, totalSize, pageIndex, bodies, context);
+            showTableBody(headList, startIndex, splitBodies, columnLengthList, width);
+            showTableCnt(width, totalSize, pageIndex, splitBodies, context);
         } else {
             showWarning("数据为空");
         }
@@ -130,7 +140,8 @@ public class Print {
      */
     private LinkedList<String> preHandleHead(List<Record> bodies){
         assert !bodies.isEmpty();
-        val headList = new LinkedList<String>(bodies.get(0).keySet());
+        Record record = bodies.get(0);
+        val headList = new LinkedList<String>(record.keySet());
         headList.addFirst("index");
         return headList;
     }

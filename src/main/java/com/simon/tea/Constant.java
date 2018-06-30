@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 public interface Constant {
     String BASE_CATALOG = "tea";
     String SYS_CMD = "tea";
+    String DEFAULT_CMD = "default";
 
     Charset BASE_CHARSET = Charset.forName("UTF-8");
     String MODULE_PATH = "root".equals(System.getProperty("user.name")) ? "/var/tea"

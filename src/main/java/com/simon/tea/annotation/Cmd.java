@@ -32,4 +32,9 @@ public @interface Cmd {
      * 对应的命令名字
      */
     String describe() default "";
+
+    /**
+     * 模块默认命令
+     */
+    boolean idDefault() default false;
 }

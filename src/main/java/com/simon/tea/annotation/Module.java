@@ -30,4 +30,9 @@ public @interface Module {
      * 是否可用
      */
     boolean available() default true;
+
+    /**
+     * 命令函数执行前需要执行的函数，必须是模块内的函数名
+     */
+    String cmdPreRun() default "";
 }

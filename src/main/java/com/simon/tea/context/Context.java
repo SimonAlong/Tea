@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 @Data
 public class Context {
 
+    private String showCatalog = BASE_CATALOG;
     private String currentCatalog = BASE_CATALOG;
     private String currentModule = BASE_CATALOG;
     private String currentPath = MODULE_PATH;
@@ -59,6 +60,12 @@ public class Context {
 
     public void addCatalog(String module) {
         currentCatalog += "/" + module;
+        showCatalog = currentCatalog;
+    }
+
+    public void addShowCatalog(String configName) {
+        showCatalog = currentCatalog;
+        showCatalog += ":" + configName;
     }
 
     public String appendCatalog(String module) {

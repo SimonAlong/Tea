@@ -30,7 +30,7 @@ public class Screen {
     }
 
     private void showCatalog() {
-        show(context.getCurrentCatalog(), CYAN);
+        show(context.getShowCatalog(), CYAN);
         show("> ");
     }
 

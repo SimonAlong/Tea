@@ -75,7 +75,7 @@ public class SystemProcessor {
             } else if(module.equals("..")){
                 quit(context);
             } else{
-                showError("配置：" + module + " 不存在");
+                showError("模块：" + module + " 不存在");
             }
         }
     }

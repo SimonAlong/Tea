@@ -1,5 +1,6 @@
 package com.simon.tea.processor;
 
+import static com.simon.tea.Constant.DEFAULT_CMD;
 import static com.simon.tea.Print.*;
 
 import com.simon.tea.DBManager;
@@ -20,7 +21,7 @@ import org.springframework.util.StringUtils;
  * @author zhouzhenyong
  * @since 2018/6/25 下午4:21
  */
-@Module(name = "db")
+@Module(name = "db", cmdPreRun = "cmdBeforeRun")
 public class Db {
     @Cmd(value = "show", describe = "展示表的数据：show tableNam，详情，请用命令: usage show")
     public void showTableData(Context context){
@@ -148,21 +149,36 @@ public class Db {
     @Cmd(value = "load", describe = "载入配置")
     public void load(Context context){
         try {
-            String fileName = context.secondWord();
-            if (StringUtils.hasText(fileName)) {
+            String configName = context.secondWord();
+            if (StringUtils.hasText(configName)) {
                 Properties properties = new Properties();
-                properties.load(new FileInputStream(context.appendPath(fileName)));
+                properties.load(new FileInputStream(context.appendPath(configName)));
 
                 context.getDbManager().startDb(
                     StringUtil.valueOf(properties.get("jdbcUrl")),
                     StringUtil.valueOf(properties.get("username")),
-                    StringUtil.valueOf(properties.get("password")),
-                    fileName);
-                context.addCatalog(fileName);
-                context.setCurrentModule(fileName);
+                    StringUtil.valueOf(properties.get("password")));
+                context.addShowCatalog(configName);
             }
         } catch (IOException e) {
             showError("文件没有找到");
+        }
+    }
+
+    /**
+     * DB 的默认命令函数
+     */
+    @Cmd(value = DEFAULT_CMD, describe = "db 里面的默认命令", idDefault = true)
+    public void all(Context context){
+        context.getDbManager().execute();
+    }
+
+    /**
+     * 每个命令函数执行前需要执行的函数
+     */
+    public void cmdBeforeRun(Context context){
+        if(!context.getDbManager().isStart()){
+            showError("没有载入配置");
         }
     }
 }
