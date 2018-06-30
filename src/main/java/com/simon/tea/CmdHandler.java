@@ -21,11 +21,12 @@ public class CmdHandler {
     private Method handler;
     private Object obj;
 
-    void handle(Context context){
+    Object handle(Context context){
         try {
-            handler.invoke(obj, context);
+            return handler.invoke(obj, context);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 }

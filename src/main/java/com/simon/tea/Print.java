@@ -5,9 +5,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 import com.simon.tea.context.Context;
 import com.simon.tea.util.StringUtil;
-import com.sun.org.apache.regexp.internal.RE;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -290,7 +288,7 @@ public class Print {
      * 根据输入的类型进行添加不同的颜色
      */
     private void showValueJudgeColor(Object word){
-        if(word.equals(Constant.SYS_CMD)){
+        if(word.equals(Constant.SYS_MODULE)){
             show(word, RED);
         }else{
             //todo 其他类型判断

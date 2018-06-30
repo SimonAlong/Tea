@@ -21,14 +21,14 @@ import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.StringUtils;
 
 import static com.simon.tea.Constant.BASE_CATALOG;
-import static com.simon.tea.Constant.SYS_CMD;
+import static com.simon.tea.Constant.SYS_MODULE;
 import static com.simon.tea.Print.*;
 
 /**
  * @author zhouzhenyong
  * @since 2018/6/25 下午5:43
  */
-@Module(name = SYS_CMD)
+@Module(name = SYS_MODULE)
 public class SystemProcessor {
 
     @Cmd(value = "tea", describe = "系统命令：tea db或者log或者其他等模块，这样直接进入对应的模块")

@@ -146,7 +146,7 @@ public class Db {
         return uses;
     }
 
-    @Cmd(value = "load", describe = "载入配置")
+    @Cmd(value = "load", describe = "载入配置", usePreCmd = false)
     public void load(Context context){
         try {
             String configName = context.secondWord();
@@ -166,19 +166,21 @@ public class Db {
     }
 
     /**
-     * DB 的默认命令函数
+     * DB 的默认命令函数，没有其他命令匹配，则就会走这个处理
      */
     @Cmd(value = DEFAULT_CMD, describe = "db 里面的默认命令", idDefault = true)
-    public void all(Context context){
+    public void defaultCmd(Context context){
         context.getDbManager().execute();
     }
 
     /**
      * 每个命令函数执行前需要执行的函数
      */
-    public void cmdBeforeRun(Context context){
+    public Boolean cmdBeforeRun(Context context){
         if(!context.getDbManager().isStart()){
             showError("没有载入配置");
+            return false;
         }
+        return true;
     }
 }

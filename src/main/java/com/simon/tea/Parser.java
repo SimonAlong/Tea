@@ -14,6 +14,9 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.experimental.Accessors;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
+
+import static com.simon.tea.Print.*;
 
 /**
  * 解析调度器
@@ -56,16 +59,33 @@ public class Parser {
     private Map<String, CmdHandler> parseCls(Module module, Class<?> cls) {
         Map<String, CmdHandler> cmdMap = new HashMap<>();
         Method[] methods = cls.getMethods();
+        Object clsObj = null;
+        try {
+            clsObj = cls.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Object finalClsObj = clsObj;
         Arrays.stream(methods).forEach(method -> {
             Cmd cmd = method.getAnnotation(Cmd.class);
             Optional.ofNullable(cmd).map(c -> {
-                try {
-                    cmdMap.putIfAbsent(c.value(), CmdHandler.builder().cmdEntity(CmdEntity.build(cmd).setModule(module.name()))
-                        .handler(method).obj(cls.newInstance()).build());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                cmdMap.putIfAbsent(c.value(), CmdHandler.builder()
+                    .cmdEntity(CmdEntity.build(cmd)).handler(method).obj(finalClsObj).build());
+                return "";
+            }).orElseGet(() -> {
+                String preRunMethod = module.cmdPreRun();
+                if(!StringUtils.isEmpty(preRunMethod)){
+                    return Arrays.stream(methods).filter(m -> m.getName().equals(preRunMethod))
+                        .findFirst().map(m -> {
+                            cmdMap.putIfAbsent(preRunMethod, CmdHandler.builder()
+                                .handler(m).obj(finalClsObj).build());
+                            return "";
+                        }).orElseGet(() -> {
+                            showError("没有找到命令前置执行函数：" + preRunMethod);
+                            return null;
+                        });
                 }
-                return null;
+                return "";
             });
         });
         return cmdMap;

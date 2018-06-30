@@ -2,6 +2,7 @@ package com.simon.tea.context;
 
 import static com.simon.tea.Constant.BASE_CATALOG;
 import static com.simon.tea.Constant.MODULE_PATH;
+import static com.simon.tea.Constant.SYS_MODULE;
 
 import com.simon.tea.CfgManager;
 import com.simon.tea.CmdHandler;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
-import me.zzp.am.Am;
 import org.springframework.util.StringUtils;
 
 /**
@@ -69,7 +69,10 @@ public class Context {
     }
 
     public String appendCatalog(String module) {
-        return currentCatalog + "/" + module;
+        if(!module.equals(SYS_MODULE)){
+            return currentCatalog + "/" + module;
+        }
+        return currentCatalog;
     }
 
     public String appendPath(String path) {

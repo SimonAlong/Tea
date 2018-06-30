@@ -1,7 +1,7 @@
 package com.simon.tea;
 
 import static com.simon.tea.Constant.DEFAULT_CMD;
-import static com.simon.tea.Constant.SYS_CMD;
+import static com.simon.tea.Constant.SYS_MODULE;
 import static com.simon.tea.Print.*;
 
 import com.simon.tea.annotation.Module;
@@ -9,7 +9,6 @@ import com.simon.tea.context.Context;
 import com.simon.tea.meta.CfgPath;
 import com.simon.tea.util.FileUtil;
 import com.simon.tea.util.MapUtil;
-import com.simon.tea.util.ShellUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
+import org.springframework.util.StringUtils;
 
 /**
  * 命令分析和执行管理器
@@ -37,22 +36,30 @@ public class CfgManager {
     private Map<String, Map<String, CmdHandler>> moduleCmdMap = new HashMap<>();
     //key 是目录，value 是每个目录模块中的默认命令
     private Map<String, CmdHandler> moduleDefaultMap = new HashMap<>();
+    //key 是目录，value 是每个目录模块中所有命令要首先运行的函数
+    private Map<String, CmdHandler> cmdPreRunMap = new HashMap<>();
     //key 是目录，value是对应目录下的配置集合
     private Map<String, List<CfgPath>> configMap = new HashMap<>();
 
     void analyse() {
-        Optional.ofNullable(context.getCmdHandlerMap().get(context.firstWord())).map(h -> {
+        String catalog = context.getCurrentCatalog();
+        Optional.ofNullable(cmdPreRunMap.get(catalog)).map(h->{//先运行每个命令的前置命令
+            if(Boolean.class.cast(h.handle(context))){
+                return null;
+            }
+            return "";
+        }).orElseGet(()-> Optional.ofNullable(context.getCmdHandlerMap().get(context.firstWord())).map(h -> {//寻找匹配的命令
             context.setTakeTime();
             h.handle(context);
             return "";
-        }).orElseGet(() -> Optional.ofNullable(moduleDefaultMap.get(context.getCurrentCatalog())).map(h -> {
+        }).orElseGet(() -> Optional.ofNullable(moduleDefaultMap.get(context.getCurrentCatalog())).map(h -> {//用默认命令
             context.setTakeTime();
             h.handle(context);
             return "";
         }).orElseGet(() -> {
             showCmdError(context.getInput());
             return null;
-        }));
+        })));
     }
 
     public void loadCmd() {
@@ -88,7 +95,7 @@ public class CfgManager {
     }
 
     void addModule(Module module, Map<String, CmdHandler> cmdMap) {
-        if (module.name().equals(SYS_CMD)) {
+        if (module.name().equals(SYS_MODULE)) {
             moduleCmdMap.putIfAbsent(module.name(), cmdMap);
             loadCmd();
         } else {
@@ -100,6 +107,13 @@ public class CfgManager {
             Optional.ofNullable(cmdMap.get(DEFAULT_CMD))
                 .map(cmd -> moduleDefaultMap.putIfAbsent(context.appendCatalog(module.name()), cmd));
         }
+
+        //配置每个模块中的命令执行前的需要执行的函数
+        String cmdPreRunMethod = module.cmdPreRun();
+        if(!StringUtils.isEmpty(cmdPreRunMethod)){
+            Optional.ofNullable(cmdMap.get(cmdPreRunMethod))
+                .map(h->cmdPreRunMap.putIfAbsent(context.appendCatalog(module.name()), h));
+        }
     }
 
     /**
@@ -108,7 +122,7 @@ public class CfgManager {
      * @param moduleName 模块名字
      */
     private void loadSysCfg(String moduleName) {
-        configMap.compute(SYS_CMD, (key, value) -> {
+        configMap.compute(SYS_MODULE, (key, value) -> {
             if (value == null) {
                 List<CfgPath> list = new ArrayList<>();
                 list.add(CfgPath.builder().name(moduleName).build());

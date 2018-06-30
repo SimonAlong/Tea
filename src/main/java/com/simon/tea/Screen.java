@@ -36,6 +36,5 @@ public class Screen {
 
     Screen(){
         parser = new Parser(context);
-        parser.process();
     }
 }

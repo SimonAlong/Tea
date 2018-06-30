@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
  */
 public interface Constant {
     String BASE_CATALOG = "tea";
-    String SYS_CMD = "tea";
+    String SYS_MODULE = "tea";
     String DEFAULT_CMD = "default";
 
     Charset BASE_CHARSET = Charset.forName("UTF-8");
