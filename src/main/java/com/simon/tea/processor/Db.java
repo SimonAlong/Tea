@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
  * @author zhouzhenyong
  * @since 2018/6/25 下午4:21
  */
-@Module(name = "db", cmdPreRun = "cmdBeforeRun")
+@Module(name = "db")
 public class Db {
     @Cmd(value = "show", describe = "展示表的数据：show tableNam，详情，请用命令: usage show")
     public void showTableData(Context context){
@@ -173,14 +173,14 @@ public class Db {
         context.getDbManager().execute();
     }
 
-    /**
-     * 每个命令函数执行前需要执行的函数
-     */
-    public Boolean cmdBeforeRun(Context context){
-        if(!context.getDbManager().isStart()){
-            showError("没有载入配置");
-            return false;
-        }
-        return true;
-    }
+//    /**
+//     * 每个命令函数执行前需要执行的函数
+//     */
+//    public Boolean cmdBeforeRun(Context context){
+//        if(!context.getDbManager().isStart()){
+//            showError("没有载入配置");
+//            return false;
+//        }
+//        return true;
+//    }
 }
