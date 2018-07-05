@@ -32,7 +32,7 @@ public class Print {
      * "MAGENTA"), CYAN(6, "CYAN"), WHITE(7, "WHITE"), DEFAULT(9, "DEFAULT");
      */
     public void show(Object str) {
-        System.out.print(ansi().fg(DEFAULT).render(StringUtil.valueOf(str)).reset());
+        show(str, DEFAULT);
     }
 
     public void show(Object str, Color color) {
@@ -40,7 +40,7 @@ public class Print {
     }
 
     public void showSpace(Object str) {
-        System.out.print(ansi().fg(DEFAULT).render(StringUtil.valueOf(str)).reset() + "   ");
+        showSpace(str, DEFAULT);
     }
 
     public void showSpace(Object str, Color color) {
@@ -48,7 +48,7 @@ public class Print {
     }
 
     public void showLn(Object str) {
-        System.out.println(ansi().fg(DEFAULT).render(StringUtil.valueOf(str)).reset());
+        showLn(str, DEFAULT);
     }
 
     public void showLn(Object str, Color color) {
@@ -116,11 +116,11 @@ public class Print {
          * 每列数据后面填充的空格
          */
 
-        public void showTable(List<Record> bodies, Context context) {
+        void showTable(List<Record> bodies, Context context) {
             showTable(bodies, bodies.size(), 1, 0, context);
         }
 
-        public void showTableList(List<String> bodies, String column, Context context) {
+        void showTableList(List<String> bodies, String column, Context context) {
             List<Record> columns = bodies.stream().map(data->Record.of(column, data)).collect(Collectors.toList());
             showTable(columns, bodies.size(), 1, 0, context);
         }
@@ -328,26 +328,18 @@ public class Print {
         /**
          * 这里按照5列进行打印
          */
-        public void showList(List<String> dataList){
+        void showList(List<String> dataList){
             val columnSizeList = generateWidth(dataList);
             int totalSize = dataList.size();
             for (int line = 0; line < totalSize; line++) {
                 val value = dataList.get(line);
                 show(value, GREEN);
-                showNumStr(getColumnSizeIndex(columnSizeList, line) - StringUtil.length(value) + COLUMN_FILL_TIP, " ");
+                showNumStr(columnSizeList.get(line % SPLIT_NUM) - StringUtil.length(value) + COLUMN_FILL_TIP, " ");
                 if ((line + 1) % SPLIT_NUM == 0) {
                     showLn();
                 }
             }
             showLn();
-        }
-
-        private int getColumnSizeIndex(List<Integer> columnSizeList, int lineIndex){
-            return columnSizeList.get(lineIndex % SPLIT_NUM);
-        }
-
-        private int getValueIndex(int index, int totalSize){
-            return ((index % SPLIT_NUM) * (totalSize / SPLIT_NUM) + (index / SPLIT_NUM));
         }
 
         /**
@@ -356,7 +348,6 @@ public class Print {
         private List<Integer> generateWidth(List<String> dataList){
             List<Integer> columnMaxLengthList = new ArrayList<>(SPLIT_NUM).stream().map(h -> 0)
                 .collect(Collectors.toList());
-            int totalSize = dataList.size();
             val subMap = getSubListIndex(dataList);
             for (int i = 0; i < SPLIT_NUM; i++) {
                 AtomicInteger max = new AtomicInteger(0);
@@ -369,6 +360,16 @@ public class Print {
             return columnMaxLengthList;
         }
 
+        /**
+         * 生成按照列进行的映射为子列
+         * 如: 0,1,2,3,4,5,...,21转换为5列，那么输出如下
+         *
+         * 0: 0,5,10,15,20
+         * 1: 1,6,11,16,21
+         * 2: 2,7,12,17
+         * 3: 3,8,13,18
+         * 4: 4,9,14,19
+         */
         private Map<Integer, List<String>> getSubListIndex(List<String> dataList) {
             val subMap = new HashMap<Integer, List<String>>();
             for (int i = 0; i < dataList.size(); i++) {
