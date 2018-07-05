@@ -6,6 +6,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 import com.simon.tea.context.Context;
 import com.simon.tea.util.StringUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ import org.fusesource.jansi.Ansi.Color;
 @UtilityClass
 public class Print {
     public static Integer PAGE_SIZE = 20;
-    private static final Integer COLUMN_FILL_TIP = 2;
+
     /**
      * 颜色一共有这么几种：
      * BLACK(0, "BLACK"), RED(1, "RED"), GREEN(2, "GREEN"), YELLOW(3, "YELLOW"), BLUE(4, "BLUE"), MAGENTA(5,
@@ -110,6 +111,7 @@ public class Print {
 
     @UtilityClass
     public static class PrintTable{
+        private static final Integer COLUMN_FILL_TIP = 2;
         /**
          * 每列数据后面填充的空格
          */
@@ -321,22 +323,23 @@ public class Print {
     @UtilityClass
     public static class PrintList{
         private static Integer SPLIT_NUM = 5;
+        private static final Integer COLUMN_FILL_TIP = 4;
 
         /**
          * 这里按照5列进行打印
-         * @param dataList
          */
         public void showList(List<String> dataList){
             val columnSizeList = generateWidth(dataList);
             int totalSize = dataList.size();
             for (int line = 0; line < totalSize; line++) {
-                val value = getValueIndex(line, totalSize);
-                show(value);
+                val value = dataList.get(line);
+                show(value, GREEN);
                 showNumStr(getColumnSizeIndex(columnSizeList, line) - StringUtil.length(value) + COLUMN_FILL_TIP, " ");
                 if ((line + 1) % SPLIT_NUM == 0) {
                     showLn();
                 }
             }
+            showLn();
         }
 
         private int getColumnSizeIndex(List<Integer> columnSizeList, int lineIndex){
@@ -354,10 +357,10 @@ public class Print {
             List<Integer> columnMaxLengthList = new ArrayList<>(SPLIT_NUM).stream().map(h -> 0)
                 .collect(Collectors.toList());
             int totalSize = dataList.size();
-            int subSize = getSubSize(totalSize);
+            val subMap = getSubListIndex(dataList);
             for (int i = 0; i < SPLIT_NUM; i++) {
                 AtomicInteger max = new AtomicInteger(0);
-                dataList.subList(subSize * i, Math.min(subSize * (i + 1), totalSize)).forEach(s -> {
+                subMap.get(i).forEach(s -> {
                     int m = Math.max(max.get(), s.length());
                     max.set(Math.max(m, max.get()));
                 });
@@ -366,12 +369,23 @@ public class Print {
             return columnMaxLengthList;
         }
 
-        private int getSubSize(int totalSize){
-            if(totalSize % SPLIT_NUM == 0){
-                return totalSize / SPLIT_NUM;
-            }else{
-                return totalSize / (SPLIT_NUM - 1);
+        private Map<Integer, List<String>> getSubListIndex(List<String> dataList) {
+            val subMap = new HashMap<Integer, List<String>>();
+            for (int i = 0; i < dataList.size(); i++) {
+                for (int j = 0; j < SPLIT_NUM; j++) {
+                    if (i % SPLIT_NUM == j) {
+                        int finalI = i;
+                        subMap.compute(j, (k, v) -> {
+                            if (null == v) {
+                                v = new ArrayList<>();
+                            }
+                            v.add(dataList.get(finalI));
+                            return v;
+                        });
+                    }
+                }
             }
+            return subMap;
         }
     }
 }
