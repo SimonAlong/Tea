@@ -182,8 +182,7 @@ public class Print {
         for (int line = 0; line < bodies.size(); line++) {
             showValue(columnLengthList, 0, line + startIndex + 1, GREEN);
             for (int columnIndex = 1; columnIndex < headList.size(); columnIndex++) {
-                String value = String.valueOf(bodies.get(line).get(headList.get(columnIndex)));
-                showValue(columnLengthList, columnIndex, value);
+                showValue(columnLengthList, columnIndex, bodies.get(line).get(headList.get(columnIndex)));
             }
             showLn();
         }
@@ -288,11 +287,15 @@ public class Print {
      * 根据输入的类型进行添加不同的颜色
      */
     private void showValueJudgeColor(Object word){
-        if(word.equals(Constant.SYS_MODULE)){
-            show(word, RED);
+        if(null != word){
+            if (word.equals(Constant.SYS_MODULE)) {
+                show(word, RED);
+            } else {
+                //todo 其他类型判断
+                show(word);
+            }
         }else{
-            //todo 其他类型判断
-            show(word);
+            show("null");
         }
     }
 }

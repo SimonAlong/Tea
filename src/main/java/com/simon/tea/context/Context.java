@@ -110,6 +110,7 @@ public class Context {
     public void catalogQuit() {
         currentCatalog = StringUtil.backLast(currentCatalog);
         currentPath = StringUtil.backLast(currentPath);
+        showCatalog = StringUtil.backLast(showCatalog);
     }
 
     public String firstWord() {

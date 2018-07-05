@@ -6,16 +6,24 @@ import com.simon.tea.context.Context;
 import com.simon.tea.annotation.Module;
 import com.simon.tea.util.ClassUtil;
 import com.simon.tea.util.FileUtil;
+import com.simon.tea.util.MapUtil;
 import com.simon.tea.util.ShellUtil;
 import com.simon.tea.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import lombok.val;
 import me.zzp.am.Record;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.StringUtils;
@@ -104,9 +112,13 @@ public class SystemProcessor {
     public void help(Context context) {
         List<Record> cmdMap = context.getCmdHandlerMap().values().stream()
             .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
+            .map(map-> MapUtil.sort(map))
             .collect(Collectors.toList());
-        showTable(generateMapList(189), context);    //测试数据用
-//        showTable(cmdMap, cmdMap.size());
+//        showTable(generateMapList(189), context);    //测试数据用
+//        Collections.reverse(cmdMap);
+
+        showTable(cmdMap, context);
+
     }
 
     public List<Record> generateMapList(Integer num){

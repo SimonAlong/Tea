@@ -8,8 +8,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * 注解@Cmd 的实体数据
- *
+ * 注解 @Cmd 的实体数据
  * @author zhouzhenyong
  * @since 2018/6/28 上午11:00
  */
