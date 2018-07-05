@@ -34,9 +34,10 @@ public class StringUtil {
     /**
      * 计算含有中文的 String 的长度，英文一个字符长度，中文两个，由于终端界面显示有问题，这里添加一个修正因子
      */
-    public int length(String str){
+    public int length(Object str){
+        String s = valueOf(str);
         int m = 0;
-        char arr[] = str.toCharArray();
+        char arr[] = s.toCharArray();
         for (char c : arr) {
             if ((c >= 0x0391 && c <= 0xFFE5)) {
                 m = m + 2;

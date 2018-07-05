@@ -23,6 +23,8 @@ import org.fusesource.jansi.Ansi.Color;
  */
 @UtilityClass
 public class Print {
+    public static Integer PAGE_SIZE = 20;
+    private static final Integer COLUMN_FILL_TIP = 2;
     /**
      * 颜色一共有这么几种：
      * BLACK(0, "BLACK"), RED(1, "RED"), GREEN(2, "GREEN"), YELLOW(3, "YELLOW"), BLUE(4, "BLUE"), MAGENTA(5,
@@ -102,13 +104,15 @@ public class Print {
         PrintTable.showTableList(bodies, column, context);
     }
 
+    public void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex, Context context){
+        PrintTable.showTable(bodies, totalSize, pageIndex, startIndex, context);
+    }
+
     @UtilityClass
     public static class PrintTable{
         /**
          * 每列数据后面填充的空格
          */
-        private static final Integer COLUMN_FILL_TIP = 2;
-        static Integer PAGE_SIZE = 20;
 
         public void showTable(List<Record> bodies, Context context) {
             showTable(bodies, bodies.size(), 1, 0, context);
@@ -316,13 +320,58 @@ public class Print {
 
     @UtilityClass
     public static class PrintList{
+        private static Integer SPLIT_NUM = 5;
 
         /**
          * 这里按照5列进行打印
          * @param dataList
          */
         public void showList(List<String> dataList){
+            val columnSizeList = generateWidth(dataList);
+            int totalSize = dataList.size();
+            for (int line = 0; line < totalSize; line++) {
+                val value = getValueIndex(line, totalSize);
+                show(value);
+                showNumStr(getColumnSizeIndex(columnSizeList, line) - StringUtil.length(value) + COLUMN_FILL_TIP, " ");
+                if ((line + 1) % SPLIT_NUM == 0) {
+                    showLn();
+                }
+            }
+        }
 
+        private int getColumnSizeIndex(List<Integer> columnSizeList, int lineIndex){
+            return columnSizeList.get(lineIndex % SPLIT_NUM);
+        }
+
+        private int getValueIndex(int index, int totalSize){
+            return ((index % SPLIT_NUM) * (totalSize / SPLIT_NUM) + (index / SPLIT_NUM));
+        }
+
+        /**
+         * 计算每一列中的最大长度
+         */
+        private List<Integer> generateWidth(List<String> dataList){
+            List<Integer> columnMaxLengthList = new ArrayList<>(SPLIT_NUM).stream().map(h -> 0)
+                .collect(Collectors.toList());
+            int totalSize = dataList.size();
+            int subSize = getSubSize(totalSize);
+            for (int i = 0; i < SPLIT_NUM; i++) {
+                AtomicInteger max = new AtomicInteger(0);
+                dataList.subList(subSize * i, Math.min(subSize * (i + 1), totalSize)).forEach(s -> {
+                    int m = Math.max(max.get(), s.length());
+                    max.set(Math.max(m, max.get()));
+                });
+                columnMaxLengthList.add(max.get());
+            }
+            return columnMaxLengthList;
+        }
+
+        private int getSubSize(int totalSize){
+            if(totalSize % SPLIT_NUM == 0){
+                return totalSize / SPLIT_NUM;
+            }else{
+                return totalSize / (SPLIT_NUM - 1);
+            }
         }
     }
 }
