@@ -47,7 +47,6 @@ public class SystemProcessor {
     @Cmd(value = "usage", describe = "用于展示某个命令的用法: usage show或者load")
     public void usage(Context context){
         show("识别命令：usage");
-//        context.show();
     }
 
     @Cmd(value = "system config", describe = "展示系统的配置")
@@ -60,7 +59,7 @@ public class SystemProcessor {
         showLn("识别命令：set");
     }
 
-    @Cmd(value = "ll", alias = "ls -l", describe = "查看当前模块下的文件")
+    @Cmd(value = "ll", alias = "ls", describe = "查看当前模块下的文件")
     public void ll(Context context) {
         String module = context.secondWord();
         if (StringUtils.hasText(module)) {
@@ -108,22 +107,16 @@ public class SystemProcessor {
         context.setStop(true);
     }
 
-    @Cmd(value = "help", describe = "用于显示当前命令的用法")
+    @Cmd(value = "help", alias = "cmd", describe = "用于显示当前命令的用法")
     public void help(Context context) {
-        List<Record> cmdMap = context.getCmdHandlerMap().values().stream()
+        List<Record> cmdMap = context.getCmdHandlerMap().values().stream().distinct()
             .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
             .map(map-> MapUtil.sort(map))
             .collect(Collectors.toList());
 //        showTable(generateMapList(189), context);    //测试数据用
 //        Collections.reverse(cmdMap);
 
-//        showTable(cmdMap, context);
-        showLn("*******");
-        showLn(context.getDbManager().getCatalog());
-        showLn(context.getDbManager().getSchema());
-        showLn(context.getDbManager().getList());
-        showLn("*******");
-
+        showTable(cmdMap, context);
     }
 
     public List<Record> generateMapList(Integer num){

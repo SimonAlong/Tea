@@ -41,16 +41,11 @@ public class StringUtil {
         for (char c : arr) {
             if ((c >= 0x0391 && c <= 0xFFE5)) {
                 m = m + 2;
-//                m = fix(m);
             } else if (c <= 0x00FF) {
                 m = m + 1;
             }
         }
         return m;
-    }
-
-    private int fix(int num){
-        return (0 == (num % 20) ? (num + 1) : num);
     }
 
     public String valueOf(Object input){
@@ -77,4 +72,10 @@ public class StringUtil {
         return m.matches();
     }
 
+    /**
+     * 将空格替换为下划线
+     */
+    public String spaceSwp(String str){
+        return str.replaceAll(" ", "_");
+    }
 }

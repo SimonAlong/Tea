@@ -42,13 +42,7 @@ public class CfgManager {
     private Map<String, List<CfgPath>> configMap = new HashMap<>();
 
     void analyse() {
-        String catalog = context.getCurrentCatalog();
-        Optional.ofNullable(cmdPreRunMap.get(catalog)).map(h->{//先运行每个命令的前置命令
-            if(Boolean.class.cast(h.handle(context))){
-                return null;
-            }
-            return "";
-        }).orElseGet(()-> Optional.ofNullable(context.getCmdHandlerMap().get(context.firstWord())).map(h -> {//寻找匹配的命令
+        Optional.ofNullable(context.getCmdHandlerMap().get(context.firstWord())).map(h -> {//寻找匹配的命令
             context.setTakeTime();
             h.handle(context);
             return "";
@@ -59,7 +53,7 @@ public class CfgManager {
         }).orElseGet(() -> {
             showCmdError(context.getInput());
             return null;
-        })));
+        }));
     }
 
     public void loadCmd() {

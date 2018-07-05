@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import lombok.experimental.Accessors;
+import lombok.val;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -69,8 +70,11 @@ public class Parser {
         Arrays.stream(methods).forEach(method -> {
             Cmd cmd = method.getAnnotation(Cmd.class);
             Optional.ofNullable(cmd).map(c -> {
-                cmdMap.putIfAbsent(c.value(), CmdHandler.builder()
-                    .cmdEntity(CmdEntity.build(cmd)).handler(method).obj(finalClsObj).build());
+                val handler = CmdHandler.builder().cmdEntity(CmdEntity.build(cmd)).handler(method).obj(finalClsObj).build();
+                cmdMap.putIfAbsent(c.value(), handler);
+                if(StringUtils.hasText(c.alias()) && !c.alias().contains(" ")){
+                    cmdMap.putIfAbsent(c.alias(), handler);
+                }
                 return "";
             }).orElseGet(() -> {
                 String preRunMethod = module.cmdPreRun();
