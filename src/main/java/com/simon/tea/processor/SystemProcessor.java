@@ -117,7 +117,12 @@ public class SystemProcessor {
 //        showTable(generateMapList(189), context);    //测试数据用
 //        Collections.reverse(cmdMap);
 
-        showTable(cmdMap, context);
+//        showTable(cmdMap, context);
+        showLn("*******");
+        showLn(context.getDbManager().getCatalog());
+        showLn(context.getDbManager().getSchema());
+        showLn(context.getDbManager().getList());
+        showLn("*******");
 
     }
 

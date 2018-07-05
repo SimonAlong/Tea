@@ -10,6 +10,7 @@ public interface Constant {
     String BASE_CATALOG = "tea";
     String SYS_MODULE = "tea";
     String DEFAULT_CMD = "default";
+    String TABLES = "tables";
 
     Charset BASE_CHARSET = Charset.forName("UTF-8");
     String MODULE_PATH = "root".equals(System.getProperty("user.name")) ? "/var/tea"

@@ -3,6 +3,7 @@ package com.simon.tea.processor;
 import static com.simon.tea.Constant.DEFAULT_CMD;
 import static com.simon.tea.Print.*;
 
+import com.simon.tea.Constant;
 import com.simon.tea.DBManager;
 import com.simon.tea.Print;
 import com.simon.tea.annotation.Cmd;
@@ -27,36 +28,46 @@ public class Db {
     public void showTableData(Context context){
         String tableName = context.secondWord();
         if (StringUtils.hasText(tableName)) {
-            int pageIndex = 1, startIndex, showSize, totalCnd, showStartIndex = 0, pageBeforeNum;
-            String otherMsg = context.getInput().substring("show ".length() + tableName.length());
-            String sql = "select * from " + tableName;
-            String showSql = sql;
+            if(tableName.equals(Constant.TABLES)){
+                showList(context.getDbManager().getList());
+            }else if(context.getDbManager().containTable(tableName)){
+                printTable(context, tableName);
+            } else{
+                showError("表: "+ tableName + " 不存在");
+            }
+        }
+    }
 
-            DBManager db = context.getDbManager();
-            if (!StringUtils.isEmpty(otherMsg)) {//解析 show tableName
-                pageIndex = getPageIndex(otherMsg);
-                startIndex = getRangeStart(otherMsg);
-                showSize = getRangeSize(otherMsg);
-                pageBeforeNum = (pageIndex == 0 ? 0 : pageIndex - 1) * PAGE_SIZE;
+    private void printTable(Context context, String tableName){
+        int pageIndex = 1, startIndex, showSize, totalCnd, showStartIndex = 0, pageBeforeNum;
+        String otherMsg = context.getInput().substring("show ".length() + tableName.length());
+        String sql = "select * from " + tableName;
+        String showSql = sql;
 
-                showStartIndex = startIndex + pageBeforeNum;
-                if(0 != showSize){//有 -lm a,b 形式
-                    if(showSize < pageBeforeNum){
-                        showError("页签索引过界：总页数为："+(showSize/PAGE_SIZE + 1)+", 页签为："+pageIndex);
-                        return;
-                    }
-                    showSql += " limit " + showStartIndex + "," + Math.min(showSize - pageBeforeNum, PAGE_SIZE);
-                    totalCnd = showSize;
-                }else{ //有 -p pageNum 形式
-                    showSql += " limit " + showStartIndex + "," + PAGE_SIZE;
-                    totalCnd = db.count(sql);
+        DBManager db = context.getDbManager();
+        if (!StringUtils.isEmpty(otherMsg)) {//解析 show tableName
+            pageIndex = getPageIndex(otherMsg);
+            startIndex = getRangeStart(otherMsg);
+            showSize = getRangeSize(otherMsg);
+            pageBeforeNum = (pageIndex == 0 ? 0 : pageIndex - 1) * PAGE_SIZE;
+
+            showStartIndex = startIndex + pageBeforeNum;
+            if(0 != showSize){//有 -lm a,b 形式
+                if(showSize < pageBeforeNum){
+                    showError("页签索引过界：总页数为："+(showSize/PAGE_SIZE + 1)+", 页签为："+pageIndex);
+                    return;
                 }
-            }else{
-                showSql = sql + " limit 0," + PAGE_SIZE;
+                showSql += " limit " + showStartIndex + "," + Math.min(showSize - pageBeforeNum, PAGE_SIZE);
+                totalCnd = showSize;
+            }else{ //有 -p pageNum 形式
+                showSql += " limit " + showStartIndex + "," + PAGE_SIZE;
                 totalCnd = db.count(sql);
             }
-            showTable(db.all(showSql), totalCnd, pageIndex, showStartIndex, context);
+        }else{
+            showSql = sql + " limit 0," + PAGE_SIZE;
+            totalCnd = db.count(sql);
         }
+        showTable(db.all(showSql), totalCnd, pageIndex, showStartIndex, context);
     }
 
     /**
@@ -141,6 +152,7 @@ public class Db {
     public Record usageOfShow(){
         Record uses = Record.of("用法", "解释");
         uses.put("show tableName", "展示第一页，每页"+ Print.PAGE_SIZE+"行数据");
+        uses.put("show tableNames ", "展示当前库中的所有表，每页"+ Print.PAGE_SIZE+"行数据");
         uses.put("show tableName -p num", "展示第num页的数据，每页"+ Print.PAGE_SIZE+"行数据");
         uses.put("show tableName -lm 1,200", "展示前1~200条数据，每页"+ Print.PAGE_SIZE+"行数据");
         return uses;

@@ -3,11 +3,13 @@ package com.simon.tea;
 import static com.simon.tea.Print.*;
 import com.simon.tea.context.Context;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.zzp.am.Am;
 import me.zzp.am.Ao;
 import me.zzp.am.Record;
+import me.zzp.am.Table;
 
 /**
  * @author zhouzhenyong
@@ -34,6 +36,22 @@ public class DBManager {
      */
     public List<Record> all(String sql){
         return ao.all(sql);
+    }
+
+    public boolean containTable(String tableName){
+        return getList().contains(tableName);
+    }
+
+    public List<String> getList(){
+        return ao.listTables(ao.getCatalog(), ao.getSchema()).stream().map(t->t.getName()).collect(Collectors.toList());
+    }
+
+    public String getCatalog(){
+        return ao.getCatalog();
+    }
+
+    public String getSchema(){
+        return ao.getSchema();
     }
 
     /**
