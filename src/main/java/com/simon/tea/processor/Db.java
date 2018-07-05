@@ -150,12 +150,12 @@ public class Db {
 
     @Usage(target = "show")
     public Record usageOfShow(){
-        Record uses = Record.of("用法", "解释");
-        uses.put("show tableName", "展示第一页，每页"+ Print.PAGE_SIZE+"行数据");
-        uses.put("show tableNames ", "展示当前库中的所有表，每页"+ Print.PAGE_SIZE+"行数据");
-        uses.put("show tableName -p num", "展示第num页的数据，每页"+ Print.PAGE_SIZE+"行数据");
-        uses.put("show tableName -lm 1,200", "展示前1~200条数据，每页"+ Print.PAGE_SIZE+"行数据");
-        return uses;
+        return Record.of(
+        "show tableName", "展示第一页，每页"+ Print.PAGE_SIZE+"行数据",
+        "show tableNames ", "展示当前库中的所有表，每页"+ Print.PAGE_SIZE+"行数据",
+        "show tableName -p num", "展示第num页的数据，每页"+ Print.PAGE_SIZE+"行数据",
+        "show tableName -lm 1,200", "展示前1~200条数据，每页"+ Print.PAGE_SIZE+"行数据"
+        );
     }
 
     @Cmd(value = "load", describe = "载入配置", usePreCmd = false)

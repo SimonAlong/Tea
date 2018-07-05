@@ -2,6 +2,7 @@ package com.simon.tea;
 
 import com.simon.tea.annotation.Cmd;
 import com.simon.tea.annotation.Module;
+import com.simon.tea.annotation.Usage;
 import com.simon.tea.context.Context;
 import com.simon.tea.meta.CmdEntity;
 import com.simon.tea.processor.SystemProcessor;
@@ -76,20 +77,18 @@ public class Parser {
                     cmdMap.putIfAbsent(c.alias(), handler);
                 }
                 return "";
-            }).orElseGet(() -> {
-                String preRunMethod = module.cmdPreRun();
-                if(!StringUtils.isEmpty(preRunMethod)){
-                    return Arrays.stream(methods).filter(m -> m.getName().equals(preRunMethod))
-                        .findFirst().map(m -> {
-                            cmdMap.putIfAbsent(preRunMethod, CmdHandler.builder()
-                                .handler(m).obj(finalClsObj).build());
-                            return "";
-                        }).orElseGet(() -> {
-                            showError("没有找到命令前置执行函数：" + preRunMethod);
-                            return null;
-                        });
+            });
+
+            Usage usage = method.getAnnotation(Usage.class);
+            Optional.ofNullable(usage).map(use->{
+                val handler = CmdHandler.builder().cmdEntity(CmdEntity.build(cmd)).handler(method).obj(finalClsObj).build();
+                cmdMap.compute(use.target(), (k, v)->{
+
+                });
+                if(StringUtils.hasText(c.alias()) && !c.alias().contains(" ")){
+                    cmdMap.putIfAbsent(c.alias(), handler);
                 }
-                return "";
+               return "";
             });
         });
         return cmdMap;

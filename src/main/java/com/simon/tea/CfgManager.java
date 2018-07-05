@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.util.StringUtils;
 
 /**
  * 命令分析和执行管理器
@@ -35,9 +34,7 @@ public class CfgManager {
     //key 是目录， value的key 是具体的命令如：show/find
     private Map<String, Map<String, CmdHandler>> moduleCmdMap = new HashMap<>();
     //key 是目录，value 是每个目录模块中的默认命令
-    private Map<String, CmdHandler> moduleDefaultMap = new HashMap<>();
-    //key 是目录，value 是每个目录模块中所有命令要首先运行的函数
-    private Map<String, CmdHandler> cmdPreRunMap = new HashMap<>();
+    private Map<String, CmdHandler> moduleDefaultCmdMap = new HashMap<>();
     //key 是目录，value是对应目录下的配置集合
     private Map<String, List<CfgPath>> configMap = new HashMap<>();
 
@@ -46,7 +43,7 @@ public class CfgManager {
             context.setTakeTime();
             h.handle(context);
             return "";
-        }).orElseGet(() -> Optional.ofNullable(moduleDefaultMap.get(context.getCurrentCatalog())).map(h -> {//用默认命令
+        }).orElseGet(() -> Optional.ofNullable(moduleDefaultCmdMap.get(context.getCurrentCatalog())).map(h -> {//用默认命令
             context.setTakeTime();
             h.handle(context);
             return "";
@@ -99,14 +96,7 @@ public class CfgManager {
 
             //读入默认配置命令
             Optional.ofNullable(cmdMap.get(DEFAULT_CMD))
-                .map(cmd -> moduleDefaultMap.putIfAbsent(context.appendCatalog(module.name()), cmd));
-        }
-
-        //配置每个模块中的命令执行前的需要执行的函数
-        String cmdPreRunMethod = module.cmdPreRun();
-        if(!StringUtils.isEmpty(cmdPreRunMethod)){
-            Optional.ofNullable(cmdMap.get(cmdPreRunMethod))
-                .map(h->cmdPreRunMap.putIfAbsent(context.appendCatalog(module.name()), h));
+                .map(cmd -> moduleDefaultCmdMap.putIfAbsent(context.appendCatalog(module.name()), cmd));
         }
     }
 
