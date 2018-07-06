@@ -12,18 +12,12 @@ import com.simon.tea.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import lombok.val;
 import me.zzp.am.Record;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.StringUtils;
@@ -46,12 +40,21 @@ public class SystemProcessor {
 
     @Cmd(value = "usage", describe = "用于展示某个命令的用法: usage show或者load")
     public void usage(Context context){
-        show("识别命令：usage");
+        String module = context.secondWord();
+        if (StringUtils.hasText(module)) {
+            Optional.ofNullable(context.getCmdHandlerMap().get(module)).map(h->{
+                showTable(h.getUsage(), context.getPageIndex(), context);
+                return "";
+            }).orElseGet(()->{
+                showError("当前模块，命令：" + module + "不存在");
+               return "";
+            });
+        }
     }
 
-    @Cmd(value = "system config", describe = "展示系统的配置")
+    @Cmd(value = "config", describe = "展示系统的配置")
     public void systemConfig(Context context) {
-        showLn("识别命令：system config");
+        showLn("识别命令：config");
     }
 
     @Cmd(value = "set", describe = "修改系统的配置，用法：set xx=yy,mm=nn,等等")
@@ -74,7 +77,7 @@ public class SystemProcessor {
     public void cd(Context context) {
         String module = context.secondWord();
         if (StringUtils.hasText(module)) {
-            if (context.isCfg(module)) {
+            if (context.isModule(module)) {
                 context.addCatalog(module);
                 context.load();
                 context.setCurrentModule(module);
@@ -116,7 +119,7 @@ public class SystemProcessor {
 //        showTable(generateMapList(189), context);    //测试数据用
 //        Collections.reverse(cmdMap);
 
-        showTable(cmdMap, context);
+        showTable(cmdMap, context.getPageIndex(), context);
     }
 
     public List<Record> generateMapList(Integer num){

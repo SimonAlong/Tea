@@ -7,14 +7,18 @@ import com.simon.tea.context.Context;
 import com.simon.tea.meta.CmdEntity;
 import com.simon.tea.processor.SystemProcessor;
 import com.simon.tea.util.ClassUtil;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.experimental.Accessors;
 import lombok.val;
+import me.zzp.am.Record;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -54,11 +58,11 @@ public class Parser {
         Set<Class<?>> classes = ClassUtil.readClsFromPath(ClassUtils.classPackageAsResourcePath(SystemProcessor.class));
         classes.forEach(cls -> {
             Module module = cls.getAnnotation(Module.class);
-            cfgManager.addModule(module, parseCls(module, cls));
+            cfgManager.addModule(module, parseCls(cls));
         });
     }
 
-    private Map<String, CmdHandler> parseCls(Module module, Class<?> cls) {
+    private Map<String, CmdHandler> parseCls(Class<?> cls) {
         Map<String, CmdHandler> cmdMap = new HashMap<>();
         Method[] methods = cls.getMethods();
         Object clsObj = null;
@@ -81,16 +85,28 @@ public class Parser {
 
             Usage usage = method.getAnnotation(Usage.class);
             Optional.ofNullable(usage).map(use->{
-                val handler = CmdHandler.builder().cmdEntity(CmdEntity.build(cmd)).handler(method).obj(finalClsObj).build();
                 cmdMap.compute(use.target(), (k, v)->{
-
+                    if(null == v){
+                        return CmdHandler.builder().usage(getUsageList(method, finalClsObj)).build();
+                    }else{
+                        v.setUsage(getUsageList(method, finalClsObj));
+                    }
+                    return v;
                 });
-                if(StringUtils.hasText(c.alias()) && !c.alias().contains(" ")){
-                    cmdMap.putIfAbsent(c.alias(), handler);
-                }
                return "";
             });
         });
         return cmdMap;
+    }
+
+    private List<Record> getUsageList(Method method, Object object){
+        try {
+            return Record.class.cast(method.invoke(object)).entrySet().stream()
+                .map(e -> Record.of("usage", e.getKey(), "detail", e.getValue()))
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            showError("方法"+method.getName()+"的@Usage用法解析错误："+e.getLocalizedMessage());
+            return null;
+        }
     }
 }

@@ -33,8 +33,8 @@ public class Context {
     private CfgManager cfgManager;
     private DBManager dbManager;
 
-    public boolean isCfg(String module) {
-        return cfgManager.isCfg(module);
+    public boolean isModule(String module) {
+        return cfgManager.isModule(module);
     }
 
     /**
@@ -128,5 +128,9 @@ public class Context {
             }
         }
         return null;
+    }
+
+    public int getPageIndex(){
+        return cfgManager.getPageIndex(input);
     }
 }

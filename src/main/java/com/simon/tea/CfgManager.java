@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  * @since 2018/6/25 下午10:05
  */
 @RequiredArgsConstructor(staticName = "of")
-public class CfgManager {
+public class CfgManager extends SystemManager{
 
     @NonNull
     private Context context;
@@ -69,7 +69,7 @@ public class CfgManager {
         return configMap.get(context.getCurrentCatalog()).stream().map(CfgPath::getName).collect(Collectors.toList());
     }
 
-    public boolean isCfg(String module) {
+    public boolean isModule(String module) {
         return getCfgList().contains(module);
     }
 

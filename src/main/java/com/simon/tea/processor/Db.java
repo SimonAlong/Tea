@@ -46,7 +46,7 @@ public class Db {
 
         DBManager db = context.getDbManager();
         if (!StringUtils.isEmpty(otherMsg)) {//解析 show tableName
-            pageIndex = getPageIndex(otherMsg);
+            pageIndex = context.getCfgManager().getPageIndex(otherMsg);
             startIndex = getRangeStart(otherMsg);
             showSize = getRangeSize(otherMsg);
             pageBeforeNum = (pageIndex == 0 ? 0 : pageIndex - 1) * PAGE_SIZE;
@@ -68,25 +68,6 @@ public class Db {
             totalCnd = db.count(sql);
         }
         showTable(db.all(showSql), totalCnd, pageIndex, showStartIndex, context);
-    }
-
-    /**
-     * 获取要展示哪一页
-     * @param otherMsg  后面的配置信息
-     * @return  要显示的页数
-     */
-    private int getPageIndex(String otherMsg){
-        if(otherMsg.contains(" -p ")){
-            int index = otherMsg.indexOf(" -p ");
-            String endStr = otherMsg.substring(index + " -p ".length());
-            int endIndex = endStr.indexOf(" ");
-            if(endIndex != -1){
-                return Integer.valueOf(endStr.substring(0, endIndex));
-            }else{
-                return Integer.valueOf(endStr);
-            }
-        }
-        return 1;
     }
 
     /**
