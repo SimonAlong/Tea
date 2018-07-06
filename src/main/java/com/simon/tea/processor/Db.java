@@ -184,7 +184,7 @@ public class Db {
     /**
      * DB 的默认命令函数，没有其他命令匹配，则就会走这个处理
      */
-    @Cmd(value = DEFAULT_CMD, describe = "db 里面的默认命令", idDefault = true)
+    @Cmd(value = DEFAULT_CMD, describe = "db 里面的默认命令", isDefault = true)
     public void defaultCmd(Context context){
         context.getDbManager().execute();
     }

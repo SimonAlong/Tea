@@ -36,7 +36,7 @@ public @interface Cmd {
     /**
      * 模块默认命令
      */
-    boolean idDefault() default false;
+    boolean isDefault() default false;
 
     /**
      * 是否使用预处理命令，Module 的 cmdPreRun 属性

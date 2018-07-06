@@ -116,7 +116,7 @@ public class SystemProcessor {
     public void help(Context context) {
         List<Record> cmdMap = context.getCmdHandlerMap().values().stream().distinct()
             .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
-            .map(map-> MapUtil.sort(map))
+            .map(MapUtil::sort)
             .collect(Collectors.toList());
 
         showTable(cmdMap, context.getPageIndex(), context);
