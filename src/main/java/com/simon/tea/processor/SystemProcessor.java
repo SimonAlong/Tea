@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import me.zzp.am.Ao;
+import me.zzp.am.Column;
 import me.zzp.am.Record;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.StringUtils;
@@ -116,28 +118,8 @@ public class SystemProcessor {
             .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
             .map(map-> MapUtil.sort(map))
             .collect(Collectors.toList());
-//        showTable(generateMapList(189), context);    //测试数据用
-//        Collections.reverse(cmdMap);
 
         showTable(cmdMap, context.getPageIndex(), context);
-    }
-
-    public List<Record> generateMapList(Integer num){
-        List dataList = new ArrayList(num);
-        for(int i=0;i<num;i++){
-            dataList.add(generateMap(num));
-        }
-        return dataList;
-    }
-
-    private Map<String, Object> generateMap(Integer cnt){
-        HashMap data = new HashMap();
-        String str = "动媕娿你哦安定";
-//        String str = "sduowensdjofajdonfwejmdfolaujdoijalkejrowieksddfkujaowpieur";
-        data.put("value", str.substring(RandomUtils.nextInt(0, str.length())));
-        data.put("alias", str.substring(RandomUtils.nextInt(0, str.length())));
-        data.put("describe", str.substring(RandomUtils.nextInt(0, str.length())));
-        return data;
     }
 
     @Cmd(value = "version", describe = "版本号")

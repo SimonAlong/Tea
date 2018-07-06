@@ -4,12 +4,14 @@ import static com.simon.tea.Print.*;
 import com.simon.tea.context.Context;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.zzp.am.Am;
+import lombok.Setter;
 import me.zzp.am.Ao;
+import me.zzp.am.Column;
+import me.zzp.am.Index;
 import me.zzp.am.Record;
-import me.zzp.am.Table;
 
 /**
  * @author zhouzhenyong
@@ -20,6 +22,9 @@ public class DBManager {
 
     @NonNull
     private Context context;
+    @Setter
+    private String tableName;
+    @Getter
     private Ao ao = null;
 
     public boolean isStart(){
@@ -39,11 +44,19 @@ public class DBManager {
     }
 
     public boolean containTable(String tableName){
-        return getList().contains(tableName);
+        return listTables().contains(tableName);
     }
 
-    public List<String> getList(){
+    public List<String> listTables(){
         return ao.listTables(ao.getCatalog(), ao.getSchema()).stream().map(t->t.getName()).collect(Collectors.toList());
+    }
+
+    public List<Column> listColumns(){
+        return ao.listColumns(ao.getCatalog(), ao.getSchema(), tableName);
+    }
+
+    public List<Index> getIndex(){
+        return ao.listIndexes(ao.getCatalog(), ao.getSchema(), tableName);
     }
 
     public String getCatalog(){

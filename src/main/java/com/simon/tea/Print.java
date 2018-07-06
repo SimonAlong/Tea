@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import lombok.val;
+import me.zzp.am.Column;
+import me.zzp.am.Index;
 import me.zzp.am.Record;
 import org.fusesource.jansi.Ansi.Color;
 import org.springframework.util.CollectionUtils;
@@ -27,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 public class Print {
 
     public static Integer PAGE_SIZE = 20;
+    private static final Integer COLUMN_FILL_TIP = 2;
 
     /**
      * 颜色一共有这么几种： BLACK(0, "BLACK"), RED(1, "RED"), GREEN(2, "GREEN"), YELLOW(3, "YELLOW"), BLUE(4, "BLUE"), MAGENTA(5,
@@ -102,6 +105,20 @@ public class Print {
         PrintList.showList(dataList);
     }
 
+    public void showIndexTable(List<Index> indexList, Context context) {
+        val indexRecord = indexList.stream().map(index -> {
+            Record record = Record.from(index);
+            record.remove("column");
+            record.putAll(Record.from(index.getColumn()));
+            return record;
+        }).collect(Collectors.toList());
+        showTable(indexRecord, context);
+    }
+
+    public void showColumnTable(List<Column> columnList, Context context){
+        showTable(columnList.stream().map(c->Record.from(c)).collect(Collectors.toList()), context);
+    }
+
     public void showTable(List<Record> bodies, Context context) {
         PrintTable.showTable(bodies, context);
     }
@@ -120,8 +137,6 @@ public class Print {
 
     @UtilityClass
     public static class PrintTable {
-
-        private static final Integer COLUMN_FILL_TIP = 2;
 
         /**
          * 每列数据后面填充的空格
@@ -351,7 +366,7 @@ public class Print {
     public static class PrintList {
 
         private static Integer SPLIT_NUM = 4;
-        private static final Integer COLUMN_FILL_TIP = 4;
+
 
         /**
          * 这里按照5列进行打印
@@ -365,7 +380,7 @@ public class Print {
                 val value = dataList.get(line);
                 show(value, GREEN);
                 showNumStr(columnSizeList.get(line % SPLIT_NUM) - StringUtil.length(value) + COLUMN_FILL_TIP, " ");
-                if ((line + 1) % SPLIT_NUM == 0) {
+                if ((line + 1) % SPLIT_NUM == 0 || line + 1 == totalSize) {
                     showLn();
                 }
             }

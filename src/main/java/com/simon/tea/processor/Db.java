@@ -13,7 +13,11 @@ import com.simon.tea.context.Context;
 import com.simon.tea.util.StringUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
+import lombok.val;
+import me.zzp.am.Ao;
+import me.zzp.am.Column;
 import me.zzp.am.Record;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.StringUtils;
@@ -26,14 +30,30 @@ import org.springframework.util.StringUtils;
 public class Db {
     @Cmd(value = "show", describe = "展示表的数据：show tableNam，详情，请用命令: usage show")
     public void showTableData(Context context){
-        String tableName = context.secondWord();
-        if (StringUtils.hasText(tableName)) {
-            if(tableName.equals(Constant.TABLES)){
-                showList(context.getDbManager().getList());
-            }else if(context.getDbManager().containTable(tableName)){
-                printTable(context, tableName);
+        if(!context.getLoadCfg()){
+            showError("请先加载配置文件");
+            return;
+        }
+        String secondWord = context.secondWord();
+        if (StringUtils.hasText(secondWord)) {
+            DBManager db = context.getDbManager();
+            if(secondWord.equals(Constant.TABLES)){
+                showList(db.listTables());
+            } else if(secondWord.equals(Constant.INDEX)){
+                val thirdWord = context.thirdWord();
+                if(thirdWord.equals(Constant.FROM)){    //系统默认的index
+                    db.execute();
+                }else {
+                    db.setTableName(context.thirdWord());
+                    showIndexTable(db.getIndex(), context);
+                }
+            } else if(secondWord.equals(Constant.STRUCT)){
+                db.setTableName(context.thirdWord());
+                showColumnTable(db.listColumns(), context);
+            }else if(db.containTable(secondWord)){
+                printTable(context, secondWord);
             } else{
-                showError("表: "+ tableName + " 不存在");
+                showError("表: "+ secondWord + " 不存在");
             }
         }
     }
@@ -135,7 +155,9 @@ public class Db {
         "show tableName", "展示第一页，每页"+ Print.PAGE_SIZE+"行数据",
         "show tableNames ", "展示当前库中的所有表，每页"+ Print.PAGE_SIZE+"行数据",
         "show tableName -p num", "展示第num页的数据，每页"+ Print.PAGE_SIZE+"行数据",
-        "show tableName -lm 1,200", "展示前1~200条数据，每页"+ Print.PAGE_SIZE+"行数据"
+        "show tableName -lm 1,200", "展示前1~200条数据，每页"+ Print.PAGE_SIZE+"行数据",
+        "show index tableName", "显示表的索引",
+        "show struct tableName", "展示表的结构数据"
         );
     }
 
@@ -152,6 +174,7 @@ public class Db {
                     StringUtil.valueOf(properties.get("username")),
                     StringUtil.valueOf(properties.get("password")));
                 context.addShowCatalog(configName);
+                context.setLoaded();
             }
         } catch (IOException e) {
             showError("文件没有找到");
@@ -165,15 +188,4 @@ public class Db {
     public void defaultCmd(Context context){
         context.getDbManager().execute();
     }
-
-//    /**
-//     * 每个命令函数执行前需要执行的函数
-//     */
-//    public Boolean cmdBeforeRun(Context context){
-//        if(!context.getDbManager().isStart()){
-//            showError("没有载入配置");
-//            return false;
-//        }
-//        return true;
-//    }
 }

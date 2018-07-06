@@ -26,6 +26,8 @@ public class Context {
     private String currentModule = BASE_CATALOG;
     private String currentPath = MODULE_PATH;
     private String input = "";
+    private String[] inputs = new String[]{};
+    private Boolean loadCfg = false;
     private Boolean stop = false;
     private long startTime;
     //key 是当前拥有的命令
@@ -35,6 +37,11 @@ public class Context {
 
     public boolean isModule(String module) {
         return cfgManager.isModule(module);
+    }
+
+    public void setInput(String input){
+        this.input = input;
+        inputs = input.split(" ");
     }
 
     /**
@@ -56,6 +63,15 @@ public class Context {
 
     public void unload() {
         cfgManager.unloadCmd();
+        setUnloaded();
+    }
+
+    public void setLoaded(){
+        this.loadCfg = true;
+    }
+
+    public void setUnloaded(){
+        this.loadCfg = false;
     }
 
     public void addCatalog(String module) {
@@ -114,18 +130,22 @@ public class Context {
     }
 
     public String firstWord() {
-        if (StringUtils.hasText(input)) {
-            return input.split(" ")[0];
+        if (inputs.length >= 1) {
+            return inputs[0];
         }
         return null;
     }
 
     public String secondWord() {
-        if (StringUtils.hasText(input)) {
-            String[] words = input.split(" ");
-            if (words.length >= 2) {
-                return input.split(" ")[1];
-            }
+        if (inputs.length >= 2) {
+            return inputs[1];
+        }
+        return null;
+    }
+
+    public String thirdWord() {
+        if (inputs.length >= 3) {
+            return inputs[2];
         }
         return null;
     }
