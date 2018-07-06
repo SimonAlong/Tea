@@ -46,7 +46,7 @@ public class Db {
 
         DBManager db = context.getDbManager();
         if (!StringUtils.isEmpty(otherMsg)) {//解析 show tableName
-            pageIndex = context.getCfgManager().getPageIndex(otherMsg);
+            pageIndex = context.getPageIndex();
             startIndex = getRangeStart(otherMsg);
             showSize = getRangeSize(otherMsg);
             pageBeforeNum = (pageIndex == 0 ? 0 : pageIndex - 1) * PAGE_SIZE;

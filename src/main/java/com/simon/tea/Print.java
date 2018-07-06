@@ -162,18 +162,22 @@ public class Print {
          * @param context 数据上下文
          */
         void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex, Context context) {
-            val headList = preHandleHead(bodies);
-            Integer endIndex = startIndex + PAGE_SIZE;
-            List<Record> splitBodies = bodies;
-            if (bodies.size() > PAGE_SIZE) {
-                splitBodies = bodies.subList(startIndex, Math.min(endIndex, totalSize));
-            }
-            val columnLengthList = computeColumnMaxLength(splitBodies, headList, startIndex);
-            Integer width = generateWidth(splitBodies, headList, startIndex);
+            if (!CollectionUtils.isEmpty(bodies)) {
+                val headList = preHandleHead(bodies);
+                Integer endIndex = startIndex + PAGE_SIZE;
+                List<Record> splitBodies = bodies;
+                if (bodies.size() > PAGE_SIZE) {
+                    splitBodies = bodies.subList(startIndex, Math.min(endIndex, totalSize));
+                }
+                val columnLengthList = computeColumnMaxList(splitBodies, headList, startIndex);
+                Integer width = generateWidth(columnLengthList);
 
-            showTableHead(headList, columnLengthList, width);
-            showTableBody(headList, startIndex, splitBodies, columnLengthList, width);
-            showTableCnt(width, totalSize, pageIndex, splitBodies, context);
+                showTableHead(headList, columnLengthList, width);
+                showTableBody(headList, startIndex, splitBodies, columnLengthList, width);
+                showTableCnt(width, totalSize, pageIndex, splitBodies, context);
+            } else {
+                showInfo("数据为空");
+            }
         }
 
         /**
@@ -293,11 +297,10 @@ public class Print {
         /**
          * 计算一行的最长长度
          */
-        private Integer generateWidth(List<Record> bodies, List<String> headList, Integer startIndex) {
+        public Integer generateWidth(List<Integer> columnLengthList) {
             AtomicReference<Integer> width = new AtomicReference<>(0);
             //每列填充一个tip
-            computeColumnMaxLength(bodies, headList, startIndex)
-                .forEach(l -> width.updateAndGet(v -> v + l + COLUMN_FILL_TIP));
+            columnLengthList.forEach(l -> width.updateAndGet(v -> v + l + COLUMN_FILL_TIP));
             return width.get();
         }
 
@@ -309,7 +312,7 @@ public class Print {
          * @param startIndex 数据起始点
          * @return 最大长度列表
          */
-        private List<Integer> computeColumnMaxLength(List<Record> bodies, List<String> headList, Integer startIndex) {
+        private List<Integer> computeColumnMaxList(List<Record> bodies, List<String> headList, Integer startIndex) {
             List<Integer> columnMaxLengthList = new ArrayList<>(headList.size()).stream().map(h -> 0)
                 .collect(Collectors.toList());
             for (int i = 0; i < headList.size(); i++) {
@@ -354,7 +357,9 @@ public class Print {
          * 这里按照5列进行打印
          */
         void showList(List<String> dataList) {
-            val columnSizeList = generateWidth(dataList);
+            val columnSizeList = computeColumnMaxList(dataList);
+            val width = PrintTable.generateWidth(columnSizeList);
+            showNumStrLn(width, "-", GREEN);
             int totalSize = dataList.size();
             for (int line = 0; line < totalSize; line++) {
                 val value = dataList.get(line);
@@ -364,14 +369,14 @@ public class Print {
                     showLn();
                 }
             }
-            showLn();
+            showNumStrLn(width, "-", GREEN);
             showLn("总数：" + dataList.size() + " 个", BLUE);
         }
 
         /**
          * 计算每一列中的最大长度
          */
-        private List<Integer> generateWidth(List<String> dataList) {
+        private List<Integer> computeColumnMaxList(List<String> dataList) {
             List<Integer> columnMaxLengthList = new ArrayList<>(SPLIT_NUM).stream().map(h -> 0)
                 .collect(Collectors.toList());
             val subMap = getSubListIndex(dataList);
