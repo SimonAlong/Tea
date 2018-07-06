@@ -364,6 +364,7 @@ public class Print {
                     showLn();
                 }
             }
+            showLn();
             showLn("总数：" + dataList.size() + " 个", BLUE);
         }
 
