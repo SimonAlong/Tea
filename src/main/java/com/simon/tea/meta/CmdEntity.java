@@ -20,10 +20,18 @@ public class CmdEntity {
     private String value;
     private String alias;
     private String describe;
-    private Boolean idDefault;
-    private Boolean usePreCmd;
+    private Boolean oldActive;
+    private Boolean active;
+    private CmdTypeEnum type;
 
     public static CmdEntity build(Cmd cmd){
-        return CmdEntity.builder().value(cmd.value()).alias(cmd.alias()).describe(cmd.describe()).build();
+        return CmdEntity.builder()
+            .value(cmd.value())
+            .alias(cmd.alias())
+            .describe(cmd.describe())
+            .oldActive(cmd.active())
+            .active(cmd.active())
+            .type(cmd.type())
+            .build();
     }
 }

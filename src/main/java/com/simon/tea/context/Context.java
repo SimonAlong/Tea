@@ -7,11 +7,14 @@ import static com.simon.tea.Constant.SYS_MODULE;
 import com.simon.tea.CfgManager;
 import com.simon.tea.CmdHandler;
 import com.simon.tea.DBManager;
+import com.simon.tea.annotation.Cmd;
+import com.simon.tea.meta.CmdTypeEnum;
 import com.simon.tea.util.StringUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
+import lombok.val;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,7 +30,7 @@ public class Context {
     private String currentPath = MODULE_PATH;
     private String input = "";
     private String[] inputs = new String[]{};
-    private Boolean loadCfg = false;
+//    private Boolean loadCfg = false;
     private Boolean stop = false;
     private long startTime;
     //key 是当前拥有的命令
@@ -62,16 +65,8 @@ public class Context {
     }
 
     public void unload() {
+        unActive();
         cfgManager.unloadCmd();
-        setUnloaded();
-    }
-
-    public void setLoaded(){
-        this.loadCfg = true;
-    }
-
-    public void setUnloaded(){
-        this.loadCfg = false;
     }
 
     public void addCatalog(String module) {
@@ -150,7 +145,33 @@ public class Context {
         return null;
     }
 
+    public String fourWord() {
+        if (inputs.length >= 4) {
+            return inputs[3];
+        }
+        return null;
+    }
+
     public int getPageIndex(){
         return cfgManager.getPageIndex(input);
+    }
+
+    public void postHandle(CmdHandler handler){
+        // 将禁用的命令进行激活
+        if(null != handler && handler.getCmdEntity().getType().equals(CmdTypeEnum.ACTIVITY)){
+            cmdHandlerMap.values().forEach(h->{
+                val cmd = h.getCmdEntity();
+                cmd.setOldActive(cmd.getActive());
+                cmd.setActive(true);
+            });
+        }
+    }
+
+    // 将初始禁用的命令禁用
+    public void unActive(){
+        cmdHandlerMap.values().forEach(h->{
+            val cmd = h.getCmdEntity();
+            cmd.setActive(cmd.getOldActive());
+        });
     }
 }

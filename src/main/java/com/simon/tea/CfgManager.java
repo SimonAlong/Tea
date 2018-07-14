@@ -41,11 +41,11 @@ public class CfgManager extends SystemManager{
     private Map<String, List<CfgPath>> configMap = new HashMap<>();
 
     void analyse() {
-        Optional.ofNullable(context.getCmdHandlerMap().get(context.firstWord())).map(h -> {//寻找匹配的命令
+        Optional.ofNullable(getCurrentHandler()).map(h -> {//寻找匹配的命令
             context.setTakeTime();
             h.handle(context);
             return "";
-        }).orElseGet(() -> Optional.ofNullable(moduleDefaultCmdMap.get(context.getCurrentCatalog())).map(h -> {//用默认命令
+        }).orElseGet(() -> Optional.ofNullable(getDefaultHandler()).map(h -> {//用默认命令
             context.setTakeTime();
             h.handle(context);
             return "";
@@ -53,6 +53,21 @@ public class CfgManager extends SystemManager{
             showCmdError(context.getInput());
             return null;
         }));
+    }
+
+    private CmdHandler getCurrentHandler(){
+        return handler(context.getCmdHandlerMap().get(context.firstWord()));
+    }
+
+    private CmdHandler getDefaultHandler(){
+        return handler(moduleDefaultCmdMap.get(context.getCurrentCatalog()));
+    }
+
+    private CmdHandler handler(CmdHandler handler){
+        if(null != handler && handler.getCmdEntity().getActive()){
+            return handler;
+        }
+        return null;
     }
 
     public void loadCmd() {

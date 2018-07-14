@@ -2,6 +2,7 @@ package com.simon.tea.processor;
 
 import com.simon.tea.annotation.Cmd;
 import com.simon.tea.annotation.Module;
+import com.simon.tea.meta.CmdTypeEnum;
 
 /**
  * 该命令只有在 in tableName 命令之后才会正式启用
@@ -30,7 +31,7 @@ public class Table {
 
     }
 
-    @Cmd(value = "columns", isDefault = true)
+    @Cmd(value = "columns", type = CmdTypeEnum.DEFAULT)
     public void columns(){
 
     }

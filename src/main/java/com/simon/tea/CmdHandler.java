@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import me.zzp.am.Record;
 
 /**
@@ -26,7 +27,9 @@ public class CmdHandler {
 
     Object handle(Context context){
         try {
-            return handler.invoke(obj, context);
+            val result = handler.invoke(obj, context);
+            context.postHandle(this);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
         }

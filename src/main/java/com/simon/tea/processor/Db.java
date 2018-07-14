@@ -10,14 +10,12 @@ import com.simon.tea.annotation.Cmd;
 import com.simon.tea.annotation.Module;
 import com.simon.tea.annotation.Usage;
 import com.simon.tea.context.Context;
+import com.simon.tea.meta.CmdTypeEnum;
 import com.simon.tea.util.StringUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 import lombok.val;
-import me.zzp.am.Ao;
-import me.zzp.am.Column;
 import me.zzp.am.Record;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.StringUtils;
@@ -28,12 +26,8 @@ import org.springframework.util.StringUtils;
  */
 @Module(name = "db")
 public class Db {
-    @Cmd(value = "show", describe = "展示表的数据：show tableNam，详情，请用命令: usage show")
+    @Cmd(value = "show", describe = "展示表的数据：show tableNam，详情，请用命令: usage show", active = false)
     public void showTableData(Context context){
-        if(!context.getLoadCfg()){
-            showError("请先加载配置文件");
-            return;
-        }
         String secondWord = context.secondWord();
         if (StringUtils.hasText(secondWord)) {
             DBManager db = context.getDbManager();
@@ -42,11 +36,12 @@ public class Db {
             } else if(secondWord.equals(Constant.INDEX)){
                 val thirdWord = context.thirdWord();
                 if(thirdWord.equals(Constant.FROM)){    //系统默认的index
-                    db.execute();
+                    db.setTableName(context.fourWord());
+                    context.setInput(context.getInput().replaceAll(" from ", " ")); //去除 from
                 }else {
                     db.setTableName(context.thirdWord());
-                    showIndexTable(db.getIndex(), context);
                 }
+                showIndexTable(db.getIndex(), context);
             } else if(secondWord.equals(Constant.STRUCT)){
                 db.setTableName(context.thirdWord());
                 showColumnTable(db.listColumns(), context);
@@ -56,6 +51,18 @@ public class Db {
                 showError("表: "+ secondWord + " 不存在");
             }
         }
+    }
+
+    @Usage(target = "show")
+    public Record usageOfShow(){
+        return Record.of(
+            "show tableName", "展示第一页，每页"+ Print.PAGE_SIZE+"行数据",
+            "show tableNames ", "展示当前库中的所有表，每页"+ Print.PAGE_SIZE+"行数据",
+            "show tableName -p num", "展示第num页的数据，每页"+ Print.PAGE_SIZE+"行数据",
+            "show tableName -lm 1,200", "展示前1~200条数据，每页"+ Print.PAGE_SIZE+"行数据",
+            "show index tableName", "显示表的索引",
+            "show struct tableName", "展示表的结构数据"
+        );
     }
 
     private void printTable(Context context, String tableName){
@@ -149,19 +156,9 @@ public class Db {
         return 0;
     }
 
-    @Usage(target = "show")
-    public Record usageOfShow(){
-        return Record.of(
-        "show tableName", "展示第一页，每页"+ Print.PAGE_SIZE+"行数据",
-        "show tableNames ", "展示当前库中的所有表，每页"+ Print.PAGE_SIZE+"行数据",
-        "show tableName -p num", "展示第num页的数据，每页"+ Print.PAGE_SIZE+"行数据",
-        "show tableName -lm 1,200", "展示前1~200条数据，每页"+ Print.PAGE_SIZE+"行数据",
-        "show index tableName", "显示表的索引",
-        "show struct tableName", "展示表的结构数据"
-        );
-    }
 
-    @Cmd(value = "load", describe = "载入配置", usePreCmd = false)
+
+    @Cmd(value = "load", describe = "载入配置", type = CmdTypeEnum.ACTIVITY)
     public void load(Context context){
         try {
             String configName = context.secondWord();
@@ -174,7 +171,6 @@ public class Db {
                     StringUtil.valueOf(properties.get("username")),
                     StringUtil.valueOf(properties.get("password")));
                 context.addShowCatalog(configName);
-                context.setLoaded();
             }
         } catch (IOException e) {
             showError("文件没有找到");
@@ -184,7 +180,7 @@ public class Db {
     /**
      * DB 的默认命令函数，没有其他命令匹配，则就会走这个处理
      */
-    @Cmd(value = DEFAULT_CMD, describe = "db 里面的默认命令", isDefault = true)
+    @Cmd(value = DEFAULT_CMD, describe = "db 里面的默认命令", active = false)
     public void defaultCmd(Context context){
         context.getDbManager().execute();
     }

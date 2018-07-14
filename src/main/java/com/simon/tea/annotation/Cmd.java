@@ -1,5 +1,8 @@
 package com.simon.tea.annotation;
 
+import static com.simon.tea.meta.CmdTypeEnum.NORMAL;
+
+import com.simon.tea.meta.CmdTypeEnum;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -29,17 +32,17 @@ public @interface Cmd {
     String alias() default "";
 
     /**
-     * 对应的命令名字
+     * 描述
      */
     String describe() default "";
 
     /**
-     * 模块默认命令
+     * 激活标记，默认为true，若设置为false，则需要 CmdTypeEnum.ACTIVITY 对应的命令执行后，才能使用
      */
-    boolean isDefault() default false;
+    boolean active() default true;
 
     /**
-     * 是否使用预处理命令，Module 的 cmdPreRun 属性
+     * 激活标记，默认为true，若设置为false，则需要有些指令，需要在一些执行执行后才能使用
      */
-    boolean usePreCmd() default true;
+    CmdTypeEnum type() default CmdTypeEnum.NORMAL;
 }

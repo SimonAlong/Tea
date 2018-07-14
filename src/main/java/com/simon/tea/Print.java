@@ -52,7 +52,7 @@ public class Print {
     }
 
     public void showLn(Object str) {
-        if(null != str) {
+        if (null != str) {
             showLn(str, DEFAULT);
         }
     }
@@ -66,7 +66,7 @@ public class Print {
     }
 
     public void showCmdError(Object input) {
-        showError("命令不识别：" + input);
+        showError("命令不识别或者命令未激活：" + input);
     }
 
     public void showError(Object input) {
@@ -117,8 +117,8 @@ public class Print {
         showTable(indexRecord, context);
     }
 
-    public void showColumnTable(List<Column> columnList, Context context){
-        showTable(columnList.stream().map(c->Record.from(c)).collect(Collectors.toList()), context);
+    public void showColumnTable(List<Column> columnList, Context context) {
+        showTable(columnList.stream().map(c -> Record.from(c)).collect(Collectors.toList()), context);
     }
 
     public void showTable(List<Record> bodies, Context context) {
@@ -133,7 +133,8 @@ public class Print {
         PrintTable.showTableList(bodies, column, context);
     }
 
-    public void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex, Context context) {
+    public void showTable(List<Record> bodies, Integer totalSize, Integer pageIndex, Integer startIndex,
+        Context context) {
         PrintTable.showTable(bodies, totalSize, pageIndex, startIndex, context);
     }
 
@@ -162,9 +163,11 @@ public class Print {
 
         void showTableList(List<String> bodies, String column, Context context) {
             if (!CollectionUtils.isEmpty(bodies)) {
-                List<Record> columns = bodies.stream().map(data -> Record.of(column, data))
-                    .collect(Collectors.toList());
-                showTable(columns, bodies.size(), 1, 0, context);
+                List<Record> records = new ArrayList<>();
+                for (int i = 0; i < bodies.size(); i++) {
+                    records.add(Record.of(column, bodies.get(i)));
+                }
+                showTable(records, bodies.size(), 1, 0, context);
             } else {
                 showInfo("数据为空");
             }
