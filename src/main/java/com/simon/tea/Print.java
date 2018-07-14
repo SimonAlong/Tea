@@ -52,7 +52,9 @@ public class Print {
     }
 
     public void showLn(Object str) {
-        showLn(str, DEFAULT);
+        if(null != str) {
+            showLn(str, DEFAULT);
+        }
     }
 
     public void showLn(Object str, Color color) {

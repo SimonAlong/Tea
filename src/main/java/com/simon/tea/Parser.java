@@ -58,7 +58,9 @@ public class Parser {
         Set<Class<?>> classes = ClassUtil.readClsFromPath(ClassUtils.classPackageAsResourcePath(SystemProcessor.class));
         classes.forEach(cls -> {
             Module module = cls.getAnnotation(Module.class);
-            cfgManager.addModule(module, parseCls(cls));
+            if(module.visible()) {
+                cfgManager.addModule(module, parseCls(cls));
+            }
         });
     }
 

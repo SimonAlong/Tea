@@ -39,9 +39,17 @@ public class FileUtil {
         file.setWritable(true);
     }
 
+    public boolean rename(String oldFileName, String newFileName){
+        return new File(oldFileName).renameTo(new File(newFileName));
+    }
+
     public boolean fileExist(String fileName) throws IOException {
         File file = new File(fileName);
         return file.getParentFile().exists() && file.exists();
+    }
+
+    public boolean del(String fileName){
+        return new File(fileName).delete();
     }
 
     public void writeToFile(String fileName, String content) throws IOException {

@@ -11,17 +11,12 @@ import com.simon.tea.util.ShellUtil;
 import com.simon.tea.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import me.zzp.am.Ao;
-import me.zzp.am.Column;
+import lombok.val;
 import me.zzp.am.Record;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.StringUtils;
 
 import static com.simon.tea.Constant.BASE_CATALOG;
@@ -41,15 +36,15 @@ public class SystemProcessor {
     }
 
     @Cmd(value = "usage", describe = "用于展示某个命令的用法: usage show或者load")
-    public void usage(Context context){
+    public void usage(Context context) {
         String module = context.secondWord();
         if (StringUtils.hasText(module)) {
-            Optional.ofNullable(context.getCmdHandlerMap().get(module)).map(h->{
+            Optional.ofNullable(context.getCmdHandlerMap().get(module)).map(h -> {
                 showTable(h.getUsage(), context.getPageIndex(), context);
                 return "";
-            }).orElseGet(()->{
+            }).orElseGet(() -> {
                 showError("当前模块，命令：" + module + "不存在");
-               return "";
+                return "";
             });
         }
     }
@@ -66,13 +61,11 @@ public class SystemProcessor {
 
     @Cmd(value = "ll", alias = "ls", describe = "查看当前模块下的文件")
     public void ll(Context context) {
-        String module = context.secondWord();
-        if (StringUtils.hasText(module)) {
-            context.getCfgList(context.appendCatalog(module)).forEach(Print::showSpace);
-        }else{
-            context.getCfgList().forEach(Print::showSpace);
+        val cfgList = context.getCfgList();
+        if(!cfgList.isEmpty()){
+            cfgList.forEach(Print::showSpace);
+            showLn();
         }
-        showLn();
     }
 
     @Cmd(value = "cd", describe = "进入对应的模块：cd db或者log或者其他")
@@ -84,9 +77,9 @@ public class SystemProcessor {
                 context.load();
                 context.setCurrentModule(module);
                 context.setCurrentPath(context.getCurrentPath() + "/" + module);
-            } else if(module.equals("..")){
+            } else if (module.equals("..")) {
                 quit(context);
-            } else{
+            } else {
                 showError("模块：" + module + " 不存在");
             }
         }
@@ -94,10 +87,10 @@ public class SystemProcessor {
 
     @Cmd(value = "quit", describe = "返回到上一层")
     public void quit(Context context) {
-        if(!context.getCurrentCatalog().equals(BASE_CATALOG)){
+        if (!context.getCurrentCatalog().equals(BASE_CATALOG)) {
             context.unload();
             context.catalogQuit();
-        }else{
+        } else {
             showError("已经处于最顶层");
         }
     }
@@ -123,7 +116,7 @@ public class SystemProcessor {
     }
 
     @Cmd(value = "version", describe = "版本号")
-    public void version(Context context){
+    public void version(Context context) {
         try {
             Properties properties = new Properties();
             properties.load(FileUtil.readFile(new File(
@@ -140,18 +133,66 @@ public class SystemProcessor {
             String fileName = context.secondWord();
             if (StringUtils.hasText(fileName)) {
                 String filePath = context.appendPath(fileName);
-                showLn(FileUtil.readFromFile(filePath));
+                show(FileUtil.readFromFile(filePath));
             }
         } catch (IOException e) {
-            showError("文件没有找到："+e.getLocalizedMessage());
+            showError("查看异常：" + e.getLocalizedMessage());
         }
     }
 
     @Cmd(value = "edit", describe = "修改文件内容，用法：edit fileName 则打开一个编辑框直接编辑")
-    public void edit(Context context){
+    public void edit(Context context) {
         String fileName = context.secondWord();
         if (StringUtils.hasText(fileName)) {
             ShellUtil.call("open -e " + context.getAbsoluteFile(fileName));
+        }
+    }
+
+    @Cmd(value = "rename", describe = "修改文件名称，用法：rename fileOldName fileNewName")
+    public void rename(Context context) throws IOException {
+        String oldFileName = context.secondWord();
+        String newFileName = context.thirdWord();
+        if (StringUtils.hasText(oldFileName) && StringUtils.hasText(newFileName)) {
+            String oldFilePath = context.getAbsoluteFile(oldFileName);
+            if (FileUtil.fileExist(oldFilePath)) {
+                String newFilePath = context.getAbsoluteFile(newFileName);
+                if (!FileUtil.fileExist(newFilePath)) {
+                    if (FileUtil.rename(oldFilePath, newFilePath)) {
+                        context.getCfgManager().rename(oldFileName, newFileName);
+                        showInfo("修改成功");
+                    } else {
+                        showError("重命名失败");
+                    }
+                } else {
+                    showError("文件" + newFileName + "已经存在");
+                }
+            } else {
+                showError("文件" + oldFileName + "不存在");
+            }
+        }else{
+            showError("rename 用法有误");
+        }
+    }
+
+    @Cmd(value = "rmv", alias = "del", describe = "删除配置文件，用法：rmv/del fileName")
+    public void rmv(Context context) {
+        try {
+            String fileName = context.secondWord();
+            if (StringUtils.hasText(fileName)) {
+                String abFile = context.getAbsoluteFile(fileName);
+                if (FileUtil.fileExist(abFile)) {
+                    if(FileUtil.del(abFile)){
+                        context.getCfgManager().rmv(fileName);
+                        showInfo("文件"+fileName+"删除成功");
+                    }else{
+                        showError("文件"+fileName+"删除失败");
+                    }
+                }else{
+                    showError("文件"+fileName+"不存在");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -163,7 +204,7 @@ public class SystemProcessor {
                 String abFile = context.getAbsoluteFile(fileName);
                 if (!FileUtil.fileExist(abFile)) {
                     FileUtil.createFile(abFile);
-                }else{
+                } else {
                     showError("不能创建相同文件");
                 }
             }

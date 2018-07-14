@@ -16,9 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 /**
  * 命令分析和执行管理器
@@ -67,6 +69,27 @@ public class CfgManager extends SystemManager{
 
     public List<String> getCfgList() {
         return configMap.get(context.getCurrentCatalog()).stream().map(CfgPath::getName).collect(Collectors.toList());
+    }
+
+    public void rmv(String fileName){
+        val cfgList = configMap.get(context.getCurrentCatalog());
+        val cowList = new CopyOnWriteArrayList<CfgPath>(configMap.get(context.getCurrentCatalog()));
+        cowList.forEach(c->{
+            if(c.getName().equals(fileName)){
+                cfgList.remove(c);
+            }
+        });
+    }
+
+    public void rename(String oldName, String newName){
+        val cfgList = configMap.get(context.getCurrentCatalog());
+        if(!cfgList.isEmpty()){
+            cfgList.forEach(c->{
+                if(c.getName().equals(oldName)){
+                    c.setName(newName);
+                }
+            });
+        }
     }
 
     public boolean isModule(String module) {
