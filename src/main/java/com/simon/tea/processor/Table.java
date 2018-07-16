@@ -31,7 +31,7 @@ public class Table {
 
     }
 
-    @Cmd(value = "columns", type = CmdTypeEnum.DEFAULT)
+    @Cmd(value = "columns")
     public void columns(){
 
     }

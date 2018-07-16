@@ -55,7 +55,7 @@ public class Parser {
     }
 
     private void initCmdMap() {
-        Set<Class<?>> classes = ClassUtil.readClsFromPath(ClassUtils.classPackageAsResourcePath(SystemProcessor.class));
+        Set<Class<?>> classes = ClassUtil.getAnnotation("com.simon.tea", Module.class);
         classes.forEach(cls -> {
             Module module = cls.getAnnotation(Module.class);
             if(module.visible()) {
