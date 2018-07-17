@@ -43,6 +43,7 @@ public class PackageScanner {
         return classes;
     }
 
+
     Class<?> loadClass(String classFullName) throws ClassNotFoundException {
         return teaCup.loadClass(classFullName);
     }
@@ -56,9 +57,8 @@ public class PackageScanner {
     private List<String> doScan(String basePackage, List<String> nameList) throws IOException {
         String splashPath = basePackage.replaceAll("\\.", "/");
         URL url = cl.getResource(splashPath);
-        assert url != null;
-        teaCup.loadPath(url.toString());
-        this.urlClassLoader = getUrlClassLoader(url);
+        teaCup.loadPath(url);
+//        this.urlClassLoader = getUrlClassLoader(url);
 
         List<String> names;
         String filePath = StringUtil.getJarPath(url);
@@ -67,19 +67,11 @@ public class PackageScanner {
         } else {
             names = readFromDirectory(filePath);
         }
-//
-//        try {
-//            showLn("record = "+this.urlClassLoader.loadClass("me.zzp.am.Record").getSimpleName());
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
 
         for (String name : names) {
             if (isClassFile(name)) {
-                showLn("classFile = "+name);
                 nameList.add(toFullyQualifiedName(name, basePackage));
             } else {
-                showLn(" name = "+name);
                 doScan(basePackage + "." + name, nameList);
             }
         }
