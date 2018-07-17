@@ -4,6 +4,7 @@ import com.simon.tea.Print;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -69,7 +70,6 @@ public class PackageScanner {
 //
 //    }
 
-
 //    public String rootPath(String basePackage){
 //        String splashPath = StringUtil.dotToSplash(basePackage);
 //        URL url = cl.getResource(splashPath);
@@ -84,52 +84,27 @@ public class PackageScanner {
      * @return A list of fully qualified names.
      */
     private List<String> doScan(String basePackage, List<String> nameList) throws IOException {
-        String splashPath = StringUtil.dotToSplash(basePackage);
-        String splashPath2 = StringUtil.dotToSplash(" me.zzp.am");
-
-        showLn("jar 包的路径"+splashPath);
-
+        String splashPath = basePackage.replaceAll("\\.", "/");
+        showLn("jar 包的路径" + splashPath);
         URL url = cl.getResource(splashPath);
-        URL url2 = cl.getResource(splashPath2);
-        URL url3= new URL("jar:file:/Users/zhouzhenyong/project/private/tea/target/active-map-2.3.5.jar!/me/zzp");
-        showLn("url = "+url.toString());
-        showLn("url = "+url3.toString());
 
-        URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url, url3});
+        String filePath = StringUtil.getJarPath(url);
+        URLClassLoader urlClassLoader = getUrlClassLoader(url);
         this.urlClassLoader = urlClassLoader;
-        try {
-            showLn(urlClassLoader.loadClass("com.simon.tea.processor.Db").getSimpleName());
-            showLn(urlClassLoader.loadClass("com.simon.tea.Constant").getSimpleName());
-            showLn(urlClassLoader.loadClass("com.simon.tea.util.StringUtil").getSimpleName());
-            showLn(urlClassLoader.loadClass("com.simon.tea.Screen").getSimpleName());
-            showLn(urlClassLoader.loadClass("me.zzp.am.Record").getSimpleName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        String filePath = StringUtil.getRootPath(url);
 
         List<String> names = null;
         if (isJarFile(filePath)) {
-            // jar file
-            showLn(filePath+" 是一个JAR包");
-
+            showLn(filePath + " 是一个JAR包");
             names = readFromJarFile(filePath, splashPath);
         } else {
-            // directory
-            showLn(filePath+" 是一个目录");
-
+            showLn(filePath + " 是一个目录");
             names = readFromDirectory(filePath);
         }
 
         for (String name : names) {
             if (isClassFile(name)) {
-                //nameList.add(basePackage + "." + StringUtil.trimExtension(name));
                 nameList.add(toFullyQualifiedName(name, basePackage));
             } else {
-                // this is a directory
-                // check this directory for more classes
-                // do recursive invocation
                 doScan(basePackage + "." + name, nameList);
             }
         }
@@ -158,15 +133,10 @@ public class PackageScanner {
         while (null != entry) {
             String name = entry.getName();
             if (name.startsWith(splashedPackageName) && isClassFile(name)) {
-//                showLn("jar - splashedPackageName = "+splashedPackageName);
-//                showLn("jar - name = "+name);
                 nameList.add(name);
             }
 
             entry = jarIn.getNextJarEntry();
-            if(entry.getName().contains("Record")){
-                show("jarName = "+entry.getName());
-            }
         }
 
         return nameList;
@@ -189,5 +159,24 @@ public class PackageScanner {
 
     private boolean isJarFile(String name) {
         return name.endsWith(".jar");
+    }
+
+    public URLClassLoader getUrlClassLoader(URL url) {
+
+        try {
+//            String splashPath = StringUtil.dotToSplash(filePath);
+
+            showLn("teaPath = " + url.toString());
+            String rootPath = StringUtil.getRootPath(url);
+            showLn("rootPath = " + rootPath);
+            String activeMapPath = rootPath + "active-map-2.3.5.jar";
+
+            URL activeMapUrl = new File(activeMapPath).toURI().toURL();
+
+            return new URLClassLoader(new URL[]{url, activeMapUrl});
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -109,7 +109,9 @@ public class StringUtil {
             return fileUrl;
         }
 
-        return fileUrl.substring(5, endPos);
+        String jarPath = fileUrl.substring(5, endPos);
+        int l = jarPath.lastIndexOf('/');
+        return jarPath.substring(l);
     }
 
     /**
