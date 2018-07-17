@@ -22,7 +22,6 @@ import static com.simon.tea.Print.*;
  * @since 2018/7/15 下午5:31
  */
 public class PackageScanner {
-
     private String basePackage;
     private ClassLoader cl;
     private URLClassLoader urlClassLoader;
@@ -36,8 +35,6 @@ public class PackageScanner {
     List<String> scan() {
         List<String> classes = new ArrayList<>();
         try {
-//            doScan("lib", classes);
-//            scanLib("lib");
             classes = doScan(basePackage, classes);
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,35 +44,7 @@ public class PackageScanner {
 
     Class<?> loadClass(String classFullName) throws ClassNotFoundException {
         return urlClassLoader.loadClass(classFullName);
-//        return null;
     }
-
-//    public void scanLib(String libPath){
-//            URL url = cl.getResource("lib");
-//            showLn("url = " + url.toString());
-//
-//
-//        String filePath = StringUtil.getJarPath(url);
-//
-//        try {
-//            readFromJarFile(filePath, "lib");
-//
-//
-//
-//
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-//    public String rootPath(String basePackage){
-//        String splashPath = StringUtil.dotToSplash(basePackage);
-//        URL url = cl.getResource(splashPath);
-//        String rootPath = StringUtil.getRootPath(url);
-//
-//    }
 
     /**
      * Actually perform the scanning procedure.
@@ -162,10 +131,7 @@ public class PackageScanner {
     }
 
     public URLClassLoader getUrlClassLoader(URL url) {
-
         try {
-//            String splashPath = StringUtil.dotToSplash(filePath);
-
             showLn("teaPath = " + url.toString());
             String rootPath = StringUtil.getRootPath(url);
             showLn("rootPath = " + rootPath);

@@ -132,7 +132,11 @@ public class StringUtil {
         int endPos = name.lastIndexOf('.');
         int startPos = basePackage.length();
         if(-1 != endPos){
-            return name.substring(startPos + 1, endPos);
+            if(name.startsWith(basePackage)){
+                return name.substring(startPos + 1, endPos);
+            }else {
+                return name.substring(0, endPos);
+            }
         }
         return name;
     }
