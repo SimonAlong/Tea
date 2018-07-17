@@ -4,6 +4,7 @@ import com.simon.tea.annotation.Cmd;
 import com.simon.tea.processor.Db;
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -74,7 +75,9 @@ public class ClassUtil {
             for (String aClassStr : classStr) {
                 try {
                     showLn("class.forname: "+aClassStr);
-                    Class cls = Class.forName(aClassStr);
+                    Class cls = ps.loadClass(aClassStr);
+//                    Class cls = Class.forName(aClassStr);
+                    showLn(cls.getSimpleName());
                     if (cls.isAnnotationPresent(annotationCls)) {
                         classes.add(cls);
                     }

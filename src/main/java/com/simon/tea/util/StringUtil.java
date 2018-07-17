@@ -83,9 +83,10 @@ public class StringUtil {
 
 
     /**
-     * "file:/home/whf/cn/fh" -> "/home/whf/cn/fh" "jar:file:/home/whf/foo.jar!cn/fh" -> "/home/whf/foo.jar"
+     * "file:/home/whf/cn/fh" -> "/home/whf/cn/fh"
+     * "jar:file:/home/whf/foo.jar!cn/fh" -> "/home/whf/foo.jar"
      */
-    public String getRootPath(URL url) {
+    public String getJarPath(URL url) {
         String fileUrl = url.getFile();
         int pos = fileUrl.indexOf('!');
 
@@ -97,6 +98,21 @@ public class StringUtil {
     }
 
     /**
+     * "file:/home/whf/cn/fh" -> "/home/whf/cn/fh"
+     * "jar:file:/home/whf/foo.jar!cn/fh" -> "/home/whf/"
+     */
+    public String getRootPath(URL url) {
+        String fileUrl = url.getFile();
+        int endPos = fileUrl.indexOf('!');
+
+        if (-1 == endPos) {
+            return fileUrl;
+        }
+
+        return fileUrl.substring(5, endPos);
+    }
+
+    /**
      * "cn.fh.lightning" -> "cn/fh/lightning"
      */
     public String dotToSplash(String name) {
@@ -104,19 +120,18 @@ public class StringUtil {
     }
 
     /**
-     * "com/simon/tea/util/MapUtil.class" -> "MapUtil"
+     *  返回路径中的路径数据
+     * @param basePackage   com.simon.tea
+     * @param name          com/simon/tea/util/MapUtil.class
+     * @return              util.MapUtil
      */
-    public String trimExtension(String name) {
-        int endPos = name.indexOf('.');
-        int startPos = name.lastIndexOf('/');
-        if(-1 != startPos){
-            if(-1 != endPos){
-                return name.substring(startPos + 1, endPos);
-            }
-        }else{
-            return name.substring(0, endPos);
+    public String trimExtension(String basePackage, String name) {
+        name = name.replaceAll("/", "\\.");
+        int endPos = name.lastIndexOf('.');
+        int startPos = basePackage.length();
+        if(-1 != endPos){
+            return name.substring(startPos + 1, endPos);
         }
-
         return name;
     }
 
