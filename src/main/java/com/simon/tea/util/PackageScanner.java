@@ -12,6 +12,8 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import lombok.experimental.UtilityClass;
@@ -30,7 +32,7 @@ public class PackageScanner {
     PackageScanner(String basePackage) {
         this.basePackage = basePackage;
         this.cl = getClass().getClassLoader();
-        showLn("");
+        teaCup.loadPath(getRootPath(basePackage));
     }
 
     List<String> scan() {
@@ -43,31 +45,49 @@ public class PackageScanner {
         return classes;
     }
 
-
     Class<?> loadClass(String classFullName) throws ClassNotFoundException {
         return teaCup.loadClass(classFullName);
     }
 
     /**
-     * Actually perform the scanning procedure.
+     * com.simon.tea -> "/user/zzy/foo.jar"
+     */
+    private String getRootPath(String basePackage){
+        return getJarPath(Objects.requireNonNull(cl.getResource(basePackage.replaceAll("\\.", "/"))));
+    }
+
+    /**
+     * "file:/home/whf/cn/fh" -> "/home/whf/cn/fh"
+     * "jar:file:/home/whf/foo.jar!cn/fh" -> "/home/whf/foo.jar"
+     */
+    private String getJarPath(URL url) {
+        String fileUrl = url.getFile();
+        int pos = fileUrl.indexOf('!');
+
+        if (-1 == pos) {
+            return fileUrl;
+        }
+
+        return fileUrl.substring(5, pos);
+    }
+
+    /**
+     * 扫描对应包下面的文件
      *
-     * @param nameList A list to contain the result.
-     * @return A list of fully qualified names.
+     * @param nameList 类名列表.
      */
     private List<String> doScan(String basePackage, List<String> nameList) throws IOException {
         String splashPath = basePackage.replaceAll("\\.", "/");
-        URL url = cl.getResource(splashPath);
-        teaCup.loadPath(url);
-//        this.urlClassLoader = getUrlClassLoader(url);
 
         List<String> names;
-        String filePath = StringUtil.getJarPath(url);
+        String filePath = getJarPath(Objects.requireNonNull(cl.getResource(splashPath)));
         if (isJarFile(filePath)) {
             names = readFromJarFile(filePath, splashPath);
         } else {
             names = readFromDirectory(filePath);
         }
 
+        assert names != null;
         for (String name : names) {
             if (isClassFile(name)) {
                 nameList.add(toFullyQualifiedName(name, basePackage));
@@ -75,24 +95,21 @@ public class PackageScanner {
                 doScan(basePackage + "." + name, nameList);
             }
         }
-
         return nameList;
     }
 
     /**
-     * Convert short class name to fully qualified name. e.g., String -> java.lang.String
+     * 将类名转换到全类名，如 String -> java.lang.String
      */
     private String toFullyQualifiedName(String shortName, String basePackage) {
-        StringBuilder sb = new StringBuilder(basePackage);
-        sb.append('.');
-        sb.append(StringUtil.trimExtension(basePackage, shortName));
-
-        return sb.toString();
+        return basePackage + '.' + StringUtil.trimExtension(basePackage, shortName);
     }
 
+    /**
+     * 从jar包里面读取对应的文件名列表
+     * @param jarPath               jar包名路径
+     */
     private List<String> readFromJarFile(String jarPath, String splashedPackageName) throws IOException {
-        showLn("从JAR包中读取类: " + jarPath);
-
         JarInputStream jarIn = new JarInputStream(new FileInputStream(jarPath));
         JarEntry entry = jarIn.getNextJarEntry();
 
@@ -102,21 +119,17 @@ public class PackageScanner {
             if (name.startsWith(splashedPackageName) && isClassFile(name)) {
                 nameList.add(name);
             }
-
             entry = jarIn.getNextJarEntry();
         }
-
         return nameList;
     }
 
     private List<String> readFromDirectory(String path) {
-        File file = new File(path);
-        String[] names = file.list();
+        String[] names = new File(path).list();
 
         if (null == names) {
             return null;
         }
-
         return Arrays.asList(names);
     }
 
@@ -126,21 +139,5 @@ public class PackageScanner {
 
     private boolean isJarFile(String name) {
         return name.endsWith(".jar");
-    }
-
-    public URLClassLoader getUrlClassLoader(URL url) {
-        try {
-            showLn("teaPath = " + url.toString());
-            String rootPath = StringUtil.getRootPath(url);
-            showLn("rootPath = " + rootPath);
-            String activeMapPath = rootPath + "active-map-2.3.5.jar";
-
-            URL activeMapUrl = new File(activeMapPath).toURI().toURL();
-
-            return new URLClassLoader(new URL[]{url, activeMapUrl});
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

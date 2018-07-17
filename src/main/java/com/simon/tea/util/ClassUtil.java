@@ -74,10 +74,7 @@ public class ClassUtil {
         if(!classStr.isEmpty()){
             for (String aClassStr : classStr) {
                 try {
-                    showLn("class.forname: "+aClassStr);
                     Class cls = ps.loadClass(aClassStr);
-//                    Class cls = Class.forName(aClassStr);
-                    showLn(cls.getSimpleName());
                     if (cls.isAnnotationPresent(annotationCls)) {
                         classes.add(cls);
                     }
