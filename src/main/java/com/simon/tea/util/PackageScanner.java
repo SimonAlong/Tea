@@ -4,6 +4,7 @@ import com.simon.tea.Print;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,7 +25,7 @@ import static com.simon.tea.Print.*;
 public class PackageScanner {
     private String basePackage;
     private ClassLoader cl;
-    private URLClassLoader urlClassLoader;
+    private TeaCup teaCup = TeaCup.getInstance();
 
     PackageScanner(String basePackage) {
         this.basePackage = basePackage;
@@ -43,7 +44,7 @@ public class PackageScanner {
     }
 
     Class<?> loadClass(String classFullName) throws ClassNotFoundException {
-        return urlClassLoader.loadClass(classFullName);
+        return teaCup.loadClass(classFullName);
     }
 
     /**
@@ -54,26 +55,31 @@ public class PackageScanner {
      */
     private List<String> doScan(String basePackage, List<String> nameList) throws IOException {
         String splashPath = basePackage.replaceAll("\\.", "/");
-        showLn("jar 包的路径" + splashPath);
         URL url = cl.getResource(splashPath);
+        assert url != null;
+        teaCup.loadPath(url.toString());
+        this.urlClassLoader = getUrlClassLoader(url);
 
+        List<String> names;
         String filePath = StringUtil.getJarPath(url);
-        URLClassLoader urlClassLoader = getUrlClassLoader(url);
-        this.urlClassLoader = urlClassLoader;
-
-        List<String> names = null;
         if (isJarFile(filePath)) {
-            showLn(filePath + " 是一个JAR包");
             names = readFromJarFile(filePath, splashPath);
         } else {
-            showLn(filePath + " 是一个目录");
             names = readFromDirectory(filePath);
         }
+//
+//        try {
+//            showLn("record = "+this.urlClassLoader.loadClass("me.zzp.am.Record").getSimpleName());
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
         for (String name : names) {
             if (isClassFile(name)) {
+                showLn("classFile = "+name);
                 nameList.add(toFullyQualifiedName(name, basePackage));
             } else {
+                showLn(" name = "+name);
                 doScan(basePackage + "." + name, nameList);
             }
         }
