@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * 读取外部jar包用的工具类
+ * 读取外部jar包用的工具类，只能读取jar包内的class文件，如果jar包内还含有jar包，则读取不了
  *
  * @author zhouzhenyong
  * @since 2018/7/17 下午3:48
@@ -53,7 +53,7 @@ public class TeaCup {
      *
      * @param jarRootPath jar包所在文件路径，如：/local/test/work/tea.jar
      */
-    public void loadPath(String jarRootPath) {
+    public void read(String jarRootPath) {
         File file = new File(jarRootPath);
         readFile(file);
     }
@@ -63,7 +63,7 @@ public class TeaCup {
      *
      * @param url jar包所在文件的路径
      */
-    public void loadPath(URL url) {
+    public void read(URL url) {
         try {
             readFile(new File(url.toURI()));
         } catch (URISyntaxException e) {
@@ -76,7 +76,7 @@ public class TeaCup {
      *
      * @param file jar包所在文件的路径
      */
-    public void loadPath(File file) {
+    public void read(File file) {
         readFile(file);
     }
 
@@ -85,7 +85,7 @@ public class TeaCup {
      *
      * @param jarPath jar包所在文件的路径组
      */
-    public void loadPath(String... jarPath) {
+    public void read(String... jarPath) {
         Arrays.stream(jarPath).map(File::new).forEach(this::addURL);
     }
 
@@ -94,7 +94,7 @@ public class TeaCup {
      *
      * @param urls jar包所在文件的路径组
      */
-    public void loadPath(URL... urls) {
+    public void read(URL... urls) {
         Arrays.stream(urls).forEach(this::addURL);
     }
 
@@ -103,7 +103,7 @@ public class TeaCup {
      *
      * @param jarPath jar包所在文件的路径组
      */
-    public void loadPath(File... jarPath) {
+    public void read(File... jarPath) {
         Arrays.stream(jarPath).forEach(this::addURL);
     }
 

@@ -26,7 +26,7 @@ public class PackageScanner {
      */
     PackageScanner(String basePackage) {
         this.basePackage = basePackage;
-        teaCup.loadPath(getRootPath(basePackage));
+        teaCup.read(getRootPath(basePackage));
     }
 
     List<String> scan() {
@@ -47,8 +47,13 @@ public class PackageScanner {
      * com.simon.tea -> "/user/zzy/foo.jar"
      */
     private String getRootPath(String basePackage){
-        return getJarPath(Objects.requireNonNull(getClass().getClassLoader()
-            .getResource(basePackage.replaceAll("\\.", "/"))));
+        System.out.println("basePackage = "+basePackage);
+        return getRootPath(baseUrl(basePackage));
+    }
+
+    private URL baseUrl(String basePackage){
+        return Objects.requireNonNull(getClass().getClassLoader()
+            .getResource(basePackage.replaceAll("\\.", "/")));
     }
 
     /**
@@ -62,8 +67,13 @@ public class PackageScanner {
         if (-1 == pos) {
             return fileUrl;
         }
-
         return fileUrl.substring(5, pos);
+    }
+
+    private String getRootPath(URL url){
+        String jarPath = getJarPath(url);
+        int end = jarPath.lastIndexOf('/');
+        return jarPath.substring(0, end);
     }
 
     /**
@@ -74,7 +84,7 @@ public class PackageScanner {
     private List<String> doScan(String basePackage, List<String> nameList) throws IOException {
         String splashPath = basePackage.replaceAll("\\.", "/");
         List<String> names;
-        String filePath = getRootPath(basePackage);
+        String filePath = getJarPath(baseUrl(basePackage));
 
         if (isJarFile(filePath)) {
             names = readFromJarFile(filePath, splashPath);

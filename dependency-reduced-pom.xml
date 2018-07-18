@@ -26,25 +26,6 @@
         </executions>
       </plugin>
       <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <archive>
-            <addMavenDescriptor>false</addMavenDescriptor>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <mainClass>com.simon.tea.Main</mainClass>
-            </manifest>
-            <manifestEntries>
-              <Class-Path>lib/active-map-2.3.5.jar</Class-Path>
-            </manifestEntries>
-          </archive>
-          <excludes>
-            <exclude>${project.basedir}/xml/*</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>8</source>
@@ -52,28 +33,6 @@
           <compilerArguments>
             <extdirs>${project.basedir}/src/main/resources/lib</extdirs>
           </compilerArguments>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-              <excludeTransitive>false</excludeTransitive>
-              <stripVersion>false</stripVersion>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <outputDirectory>${project.build.directory}/lib</outputDirectory>
-          <excludeTransitive>false</excludeTransitive>
-          <stripVersion>false</stripVersion>
         </configuration>
       </plugin>
     </plugins>
