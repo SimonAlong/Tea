@@ -15,6 +15,9 @@ alias tea='java -jar yourPathName/tea-1.0-SNAPSHOT.jar'
 ```
 其中yourPathName 是自己的tea的jar包放置的路径
 
+<span data-type="background" style="background-color:#F5222D">注意：</span>
+在tea-1.0-SNAPSHOT.jar相同包下面需要将active\_map.jar也放在同一目录，目前有点搓，还不能动态加载jar包中的jar包
+
 ### 2、brew下载
 ```plain
 brew install tea
@@ -34,12 +37,6 @@ cd log/db/...：进入指定的模块
 exit：退出系统
 quit：退出当前模块，返回到上一层模块
 his：查看最近使用的命令
-
-help: 显示每个命令的用法
-help db或者log或者其他，可以直接查看每个模块中的其他的命令
-cat: 命令展示对应配置的内容
-cat db/cfgName 查看配置内容
-
 ## 二、<span data-type="color" style="color:rgb(57, 57, 57)">db命令集合</span>
 ### a、配置命令
 
@@ -91,7 +88,6 @@ update ...
 delete ...
 这些都是支持的
 
-## 三、<span data-type="color" style="color:rgb(57, 57, 57)">log命令集合</span>
-### a、日志配置的命令
+##
 
 
