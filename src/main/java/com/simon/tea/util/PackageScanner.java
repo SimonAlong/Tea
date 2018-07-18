@@ -47,7 +47,6 @@ public class PackageScanner {
      * com.simon.tea -> "/user/zzy/foo.jar"
      */
     private String getRootPath(String basePackage){
-        System.out.println("basePackage = "+basePackage);
         return getRootPath(baseUrl(basePackage));
     }
 
