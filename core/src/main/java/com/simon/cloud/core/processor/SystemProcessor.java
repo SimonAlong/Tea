@@ -1,0 +1,213 @@
+package com.simon.cloud.core.processor;
+
+import com.simon.cloud.core.Constant;
+import com.simon.cloud.core.Print;
+import com.simon.cloud.core.annotation.Cmd;
+import com.simon.cloud.core.annotation.Module;
+import com.simon.cloud.core.context.Context;
+import com.simon.cloud.core.util.ClassUtil;
+import com.simon.cloud.core.util.FileUtil;
+import com.simon.cloud.core.util.MapUtil;
+import com.simon.cloud.core.util.ShellUtil;
+import com.simon.cloud.core.util.StringUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.Collectors;
+import lombok.val;
+import me.zzp.am.Record;
+import org.springframework.util.StringUtils;
+
+/**
+ * @author zhouzhenyong
+ * @since 2018/6/25 下午5:43
+ */
+@Module(name = Constant.SYS_MODULE)
+public class SystemProcessor {
+
+    @Cmd(value = "tea", describe = "系统命令：tea db或者log或者其他等模块，这样直接进入对应的模块")
+    public void tea(Context context) {
+        Print.showLn("识别命令：tea");
+    }
+
+    @Cmd(value = "usage", describe = "用于展示某个命令的用法: usage show或者load")
+    public void usage(Context context) {
+        String module = context.secondWord();
+        if (StringUtils.hasText(module)) {
+            Optional.ofNullable(context.getCmdHandlerMap().get(module)).map(h -> {
+                Print.showTable(h.getUsage(), context.getPageIndex(), context);
+                return "";
+            }).orElseGet(() -> {
+                Print.showError("当前模块，命令：" + module + "不存在");
+                return "";
+            });
+        }
+    }
+
+    @Cmd(value = "config", describe = "展示系统的配置")
+    public void systemConfig(Context context) {
+        Print.showLn("识别命令：config");
+    }
+
+    @Cmd(value = "set", describe = "修改系统的配置，用法：set xx=yy,mm=nn,等等")
+    public void set(Context context) {
+        Print.showLn("识别命令：set");
+    }
+
+    @Cmd(value = "ll", alias = "ls", describe = "查看当前模块下的文件")
+    public void ll(Context context) {
+        val cfgList = context.getCfgList();
+        if (!cfgList.isEmpty()) {
+            cfgList.forEach(Print::showSpace);
+            Print.showLn();
+        }
+    }
+
+    @Cmd(value = "cd", describe = "进入对应的模块：cd db或者log或者其他")
+    public void cd(Context context) {
+        String module = context.secondWord();
+        if (StringUtils.hasText(module)) {
+            if (context.isModule(module)) {
+                context.addCatalog(module);
+                context.load();
+                context.setCurrentModule(module);
+                context.setCurrentPath(context.getCurrentPath() + "/" + module);
+            } else if (module.equals("..")) {
+                quit(context);
+            } else {
+                Print.showError("模块：" + module + " 不存在");
+            }
+        }
+    }
+
+    @Cmd(value = "quit", describe = "返回到上一层")
+    public void quit(Context context) {
+        if (!context.getCurrentCatalog().equals(Constant.BASE_CATALOG)) {
+            context.unload();
+            context.catalogQuit();
+        } else {
+            Print.showError("已经处于最顶层");
+        }
+    }
+
+    @Cmd(value = "his", describe = "显示最近使用的12条命令")
+    public void his(Context context) {
+        Print.showLn("识别命令：his");
+    }
+
+    @Cmd(value = "exit", describe = "退出系统")
+    public void exit(Context context) {
+        context.setStop(true);
+    }
+
+    @Cmd(value = "help", alias = "cmd", describe = "用于显示当前命令的用法")
+    public void help(Context context) {
+        List<Record> cmdMap = context.getCmdHandlerMap().values().stream().distinct()
+            .map(cmdHandler -> Record.from(cmdHandler.getCmdEntity()))
+            .map(MapUtil::sort)
+            .collect(Collectors.toList());
+
+        Print.showTable(cmdMap, context.getPageIndex(), context);
+    }
+
+    @Cmd(value = "version", describe = "版本号")
+    public void version(Context context) {
+        try {
+            Properties properties = new Properties();
+            properties.load(FileUtil.readFile(new File(
+                StringUtil.backLast(ClassUtil.classPath()) + "/maven-archiver/pom.properties")));
+            Print.showLn(properties.get("version"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Cmd(value = "cat", describe = "查看文件内容")
+    public void cat(Context context) {
+        try {
+            String fileName = context.secondWord();
+            if (StringUtils.hasText(fileName)) {
+                String filePath = context.appendPath(fileName);
+                Print.show(FileUtil.readFromFile(filePath));
+            }
+        } catch (IOException e) {
+            Print.showError("查看异常：" + e.getLocalizedMessage());
+        }
+    }
+
+    @Cmd(value = "edit", describe = "修改文件内容，用法：edit fileName 则打开一个编辑框直接编辑")
+    public void edit(Context context) {
+        String fileName = context.secondWord();
+        if (StringUtils.hasText(fileName)) {
+            ShellUtil.call("open -e " + context.getAbsoluteFile(fileName));
+        }
+    }
+
+    @Cmd(value = "rename", describe = "修改文件名称，用法：rename fileOldName fileNewName")
+    public void rename(Context context) throws IOException {
+        String oldFileName = context.secondWord();
+        String newFileName = context.thirdWord();
+        if (StringUtils.hasText(oldFileName) && StringUtils.hasText(newFileName)) {
+            String oldFilePath = context.getAbsoluteFile(oldFileName);
+            if (FileUtil.fileExist(oldFilePath)) {
+                String newFilePath = context.getAbsoluteFile(newFileName);
+                if (!FileUtil.fileExist(newFilePath)) {
+                    if (FileUtil.rename(oldFilePath, newFilePath)) {
+                        context.getCfgManager().rename(oldFileName, newFileName);
+                        Print.showInfo("修改成功");
+                    } else {
+                        Print.showError("重命名失败");
+                    }
+                } else {
+                    Print.showError("文件" + newFileName + "已经存在");
+                }
+            } else {
+                Print.showError("文件" + oldFileName + "不存在");
+            }
+        } else {
+            Print.showError("rename 用法有误");
+        }
+    }
+
+    @Cmd(value = "rmv", alias = "del", describe = "删除配置文件，用法：rmv/del fileName")
+    public void rmv(Context context) {
+        try {
+            String fileName = context.secondWord();
+            if (StringUtils.hasText(fileName)) {
+                String abFile = context.getAbsoluteFile(fileName);
+                if (FileUtil.fileExist(abFile)) {
+                    if (FileUtil.del(abFile)) {
+                        context.getCfgManager().rmv(fileName);
+                        Print.showInfo("文件" + fileName + "删除成功");
+                    } else {
+                        Print.showError("文件" + fileName + "删除失败");
+                    }
+                } else {
+                    Print.showError("文件" + fileName + "不存在");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Cmd(value = "create", alias = "touch", describe = "创建新的文件")
+    public void create(Context context) {
+        try {
+            String fileName = context.secondWord();
+            if (StringUtils.hasText(fileName)) {
+                String abFile = context.getAbsoluteFile(fileName);
+                if (!FileUtil.fileExist(abFile)) {
+                    FileUtil.createFile(abFile);
+                } else {
+                    Print.showError("不能创建相同文件");
+                }
+            }
+            context.loadNewFile(fileName);
+        } catch (IOException e) {
+            Print.showError("创建文件失败：" + e.getLocalizedMessage());
+        }
+    }
+}
