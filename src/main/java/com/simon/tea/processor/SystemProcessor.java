@@ -62,7 +62,7 @@ public class SystemProcessor {
     @Cmd(value = "ll", alias = "ls", describe = "查看当前模块下的文件")
     public void ll(Context context) {
         val cfgList = context.getCfgList();
-        if(!cfgList.isEmpty()){
+        if (!cfgList.isEmpty()) {
             cfgList.forEach(Print::showSpace);
             showLn();
         }
@@ -169,7 +169,7 @@ public class SystemProcessor {
             } else {
                 showError("文件" + oldFileName + "不存在");
             }
-        }else{
+        } else {
             showError("rename 用法有误");
         }
     }
@@ -181,14 +181,14 @@ public class SystemProcessor {
             if (StringUtils.hasText(fileName)) {
                 String abFile = context.getAbsoluteFile(fileName);
                 if (FileUtil.fileExist(abFile)) {
-                    if(FileUtil.del(abFile)){
+                    if (FileUtil.del(abFile)) {
                         context.getCfgManager().rmv(fileName);
-                        showInfo("文件"+fileName+"删除成功");
-                    }else{
-                        showError("文件"+fileName+"删除失败");
+                        showInfo("文件" + fileName + "删除成功");
+                    } else {
+                        showError("文件" + fileName + "删除失败");
                     }
-                }else{
-                    showError("文件"+fileName+"不存在");
+                } else {
+                    showError("文件" + fileName + "不存在");
                 }
             }
         } catch (IOException e) {

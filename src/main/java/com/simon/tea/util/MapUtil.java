@@ -15,17 +15,17 @@ import me.zzp.am.Record;
 @UtilityClass
 public class MapUtil {
 
-    public void removeAll(Map sourceMap, Map toDeleteMap){
+    public void removeAll(Map sourceMap, Map toDeleteMap) {
         Iterator<Entry> it = sourceMap.entrySet().iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Map.Entry entry = it.next();
-            if(toDeleteMap.containsKey(entry.getKey())) {
+            if (toDeleteMap.containsKey(entry.getKey())) {
                 it.remove();
             }
         }
     }
 
-    public Record sort(Record record){
+    public Record sort(Record record) {
         Map<String, Object> map = new TreeMap<>(Comparator.reverseOrder());
         map.putAll(record);
         return Record.of(map);

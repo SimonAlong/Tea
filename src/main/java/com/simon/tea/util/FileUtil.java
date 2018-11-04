@@ -18,6 +18,7 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class FileUtil {
+
     private File getFile(String fileName) throws IOException {
         File file = new File(fileName);
         if (!file.getParentFile().exists()) {
@@ -39,7 +40,7 @@ public class FileUtil {
         file.setWritable(true);
     }
 
-    public boolean rename(String oldFileName, String newFileName){
+    public boolean rename(String oldFileName, String newFileName) {
         return new File(oldFileName).renameTo(new File(newFileName));
     }
 
@@ -48,7 +49,7 @@ public class FileUtil {
         return file.getParentFile().exists() && file.exists();
     }
 
-    public boolean del(String fileName){
+    public boolean del(String fileName) {
         return new File(fileName).delete();
     }
 
@@ -79,14 +80,15 @@ public class FileUtil {
 
     /**
      * 从配置文件目录中读取对应的配置文件列表
+     *
      * @param dirPath 配置文件的文件夹目录
      * @return 配置文件中的配置文件列表
      */
-    public List<String> readListFromPath(String dirPath){
+    public List<String> readListFromPath(String dirPath) {
         File file = new File(dirPath);
-        if(file.isDirectory()){
+        if (file.isDirectory()) {
             File[] files = file.listFiles();
-            assert files != null;
+            assert files !=null;
             return Arrays.stream(files).map(File::getName).collect(Collectors.toList());
         }
         return Collections.emptyList();

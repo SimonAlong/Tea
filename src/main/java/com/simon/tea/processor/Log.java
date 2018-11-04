@@ -11,9 +11,10 @@ import com.simon.tea.context.Context;
  * @since 2018/6/26 下午5:52
  */
 @Module(name = "log")
-public class Log{
+public class Log {
+
     @Cmd(value = "find", describe = "查找对应的数据")
-    public void find(Context context){
+    public void find(Context context) {
         show("识别命令：find");
     }
 }

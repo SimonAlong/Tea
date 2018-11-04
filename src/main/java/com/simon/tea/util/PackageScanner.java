@@ -18,11 +18,12 @@ import java.util.jar.JarInputStream;
  * @since 2018/7/15 下午5:31
  */
 public class PackageScanner {
+
     private String basePackage;
     private TeaCup teaCup = TeaCup.getInstance();
 
     /**
-     * @param basePackage   com.simon.tea
+     * @param basePackage com.simon.tea
      */
     PackageScanner(String basePackage) {
         this.basePackage = basePackage;
@@ -46,18 +47,17 @@ public class PackageScanner {
     /**
      * com.simon.tea -> "/user/zzy/foo.jar"
      */
-    private String getRootPath(String basePackage){
+    private String getRootPath(String basePackage) {
         return getRootPath(baseUrl(basePackage));
     }
 
-    private URL baseUrl(String basePackage){
+    private URL baseUrl(String basePackage) {
         return Objects.requireNonNull(getClass().getClassLoader()
             .getResource(basePackage.replaceAll("\\.", "/")));
     }
 
     /**
-     * "file:/home/whf/cn/fh" -> "/home/whf/cn/fh"
-     * "jar:file:/home/whf/foo.jar!cn/fh" -> "/home/whf/foo.jar"
+     * "file:/home/whf/cn/fh" -> "/home/whf/cn/fh" "jar:file:/home/whf/foo.jar!cn/fh" -> "/home/whf/foo.jar"
      */
     private String getJarPath(URL url) {
         String fileUrl = url.getFile();
@@ -69,7 +69,7 @@ public class PackageScanner {
         return fileUrl.substring(5, pos);
     }
 
-    private String getRootPath(URL url){
+    private String getRootPath(URL url) {
         String jarPath = getJarPath(url);
         int end = jarPath.lastIndexOf('/');
         return jarPath.substring(0, end);
@@ -91,7 +91,7 @@ public class PackageScanner {
             names = readFromDirectory(filePath);
         }
 
-        assert names != null;
+        assert names !=null;
         for (String name : names) {
             if (isClassFile(name)) {
                 nameList.add(toFullyQualifiedName(name, basePackage));
@@ -111,7 +111,8 @@ public class PackageScanner {
 
     /**
      * 从jar包里面读取对应的文件名列表
-     * @param jarPath               jar包名路径
+     *
+     * @param jarPath jar包名路径
      */
     private List<String> readFromJarFile(String jarPath, String splashedPackageName) throws IOException {
         JarInputStream jarIn = new JarInputStream(new FileInputStream(jarPath));
@@ -138,19 +139,20 @@ public class PackageScanner {
     }
 
     /**
-     *  返回路径中的路径数据
-     * @param basePackage   com.simon.tea
-     * @param name          com/simon/tea/util/MapUtil.class
-     * @return              util.MapUtil
+     * 返回路径中的路径数据
+     *
+     * @param basePackage com.simon.tea
+     * @param name com/simon/tea/util/MapUtil.class
+     * @return util.MapUtil
      */
     public String trimExtension(String basePackage, String name) {
         name = name.replaceAll("/", "\\.");
         int endPos = name.lastIndexOf('.');
         int startPos = basePackage.length();
-        if(-1 != endPos){
-            if(name.startsWith(basePackage)){
+        if (-1 != endPos) {
+            if (name.startsWith(basePackage)) {
                 return name.substring(startPos + 1, endPos);
-            }else {
+            } else {
                 return name.substring(0, endPos);
             }
         }
