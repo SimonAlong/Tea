@@ -21,6 +21,7 @@ import lombok.Setter;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Cmd {
+
     /**
      * 对应的命令名字
      */

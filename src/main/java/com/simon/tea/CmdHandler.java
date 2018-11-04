@@ -20,12 +20,13 @@ import me.zzp.am.Record;
 @Setter
 @Builder
 public class CmdHandler {
+
     private CmdEntity cmdEntity;
     private List<Record> usage;
     private Method handler;
     private Object obj;
 
-    Object handle(Context context){
+    Object handle(Context context) {
         try {
             val result = handler.invoke(obj, context);
             context.postHandle(this);

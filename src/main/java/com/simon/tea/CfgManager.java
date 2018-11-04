@@ -29,7 +29,7 @@ import lombok.val;
  * @since 2018/6/25 下午10:05
  */
 @RequiredArgsConstructor(staticName = "of")
-public class CfgManager extends SystemManager{
+public class CfgManager extends SystemManager {
 
     @NonNull
     private Context context;
@@ -55,16 +55,16 @@ public class CfgManager extends SystemManager{
         }));
     }
 
-    private CmdHandler getCurrentHandler(){
+    private CmdHandler getCurrentHandler() {
         return handler(context.getCmdHandlerMap().get(context.firstWord()));
     }
 
-    private CmdHandler getDefaultHandler(){
+    private CmdHandler getDefaultHandler() {
         return handler(moduleDefaultCmdMap.get(context.getCurrentCatalog()));
     }
 
-    private CmdHandler handler(CmdHandler handler){
-        if(null != handler && handler.getCmdEntity().getActive()){
+    private CmdHandler handler(CmdHandler handler) {
+        if (null != handler && handler.getCmdEntity().getActive()) {
             return handler;
         }
         return null;
@@ -86,21 +86,21 @@ public class CfgManager extends SystemManager{
         return configMap.get(context.getCurrentCatalog()).stream().map(CfgPath::getName).collect(Collectors.toList());
     }
 
-    public void rmv(String fileName){
+    public void rmv(String fileName) {
         val cfgList = configMap.get(context.getCurrentCatalog());
         val cowList = new CopyOnWriteArrayList<CfgPath>(configMap.get(context.getCurrentCatalog()));
-        cowList.forEach(c->{
-            if(c.getName().equals(fileName)){
+        cowList.forEach(c -> {
+            if (c.getName().equals(fileName)) {
                 cfgList.remove(c);
             }
         });
     }
 
-    public void rename(String oldName, String newName){
+    public void rename(String oldName, String newName) {
         val cfgList = configMap.get(context.getCurrentCatalog());
-        if(!cfgList.isEmpty()){
-            cfgList.forEach(c->{
-                if(c.getName().equals(oldName)){
+        if (!cfgList.isEmpty()) {
+            cfgList.forEach(c -> {
+                if (c.getName().equals(oldName)) {
                     c.setName(newName);
                 }
             });

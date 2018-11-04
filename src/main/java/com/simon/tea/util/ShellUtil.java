@@ -10,12 +10,19 @@ import lombok.experimental.UtilityClass;
 import static com.simon.tea.Print.*;
 
 /**
+ * 调用shell 命令
+ *
  * @author zhouzhenyong
  * @since 2018/6/28 下午9:09
  */
 @UtilityClass
 public class ShellUtil {
 
+    /**
+     * 执行shell 命令
+     *
+     * @param shellStr shell 命令，如：open -e fileName
+     */
     public void call(String shellStr) {
         try {
             Process process = Runtime.getRuntime().exec(shellStr);
@@ -28,7 +35,13 @@ public class ShellUtil {
         }
     }
 
-    public String callShell(String shellStr){
+    /**
+     * 执行有返回值的shell
+     *
+     * @param shellStr shell 命令，如：ls -al
+     * @return 命令执行后的返回值
+     */
+    public String callShell(String shellStr) {
         Process process = null;
         List<String> processList = new ArrayList<String>();
         try {
@@ -45,7 +58,7 @@ public class ShellUtil {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        processList.forEach(str->stringBuilder.append(str).append("\n"));
+        processList.forEach(str -> stringBuilder.append(str).append("\n"));
         return stringBuilder.toString();
     }
 }

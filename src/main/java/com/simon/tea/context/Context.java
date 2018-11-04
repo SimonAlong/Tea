@@ -30,7 +30,7 @@ public class Context {
     private String currentPath = MODULE_PATH;
     private String input = "";
     private String[] inputs = new String[]{};
-//    private Boolean loadCfg = false;
+    //    private Boolean loadCfg = false;
     private Boolean stop = false;
     private long startTime;
     //key 是当前拥有的命令
@@ -42,7 +42,7 @@ public class Context {
         return cfgManager.isModule(module);
     }
 
-    public void setInput(String input){
+    public void setInput(String input) {
         this.input = input;
         inputs = input.split(" ");
     }
@@ -80,7 +80,7 @@ public class Context {
     }
 
     public String appendCatalog(String module) {
-        if(!module.equals(SYS_MODULE)){
+        if (!module.equals(SYS_MODULE)) {
             return currentCatalog + "/" + module;
         }
         return currentCatalog;
@@ -98,20 +98,21 @@ public class Context {
         cfgManager.addNewCfg(fileName);
     }
 
-    public void setTakeTime(){
+    public void setTakeTime() {
         startTime = System.currentTimeMillis();
     }
 
-    public long getTakeTime(){
+    public long getTakeTime() {
         return System.currentTimeMillis() - startTime;
     }
 
     /**
      * 根据当前目录返回文件的绝对文件名
+     *
      * @param fileName 文件名
-     * @return  绝对路径
+     * @return 绝对路径
      */
-    public String getAbsoluteFile(String fileName){
+    public String getAbsoluteFile(String fileName) {
         return currentPath + "/" + fileName;
     }
 
@@ -152,14 +153,14 @@ public class Context {
         return null;
     }
 
-    public int getPageIndex(){
+    public int getPageIndex() {
         return cfgManager.getPageIndex(input);
     }
 
-    public void postHandle(CmdHandler handler){
+    public void postHandle(CmdHandler handler) {
         // 将禁用的命令进行激活
-        if(null != handler && handler.getCmdEntity().getType().equals(CmdTypeEnum.ACTIVITY)){
-            cmdHandlerMap.values().forEach(h->{
+        if (null != handler && handler.getCmdEntity().getType().equals(CmdTypeEnum.ACTIVITY)) {
+            cmdHandlerMap.values().forEach(h -> {
                 val cmd = h.getCmdEntity();
                 cmd.setOldActive(cmd.getActive());
                 cmd.setActive(true);
@@ -168,8 +169,8 @@ public class Context {
     }
 
     // 将初始禁用的命令禁用
-    public void unActive(){
-        cmdHandlerMap.values().forEach(h->{
+    public void unActive() {
+        cmdHandlerMap.values().forEach(h -> {
             val cmd = h.getCmdEntity();
             cmd.setActive(cmd.getOldActive());
         });

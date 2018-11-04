@@ -1,38 +1,33 @@
 package com.simon.tea.util;
 
-import com.simon.tea.Print;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
-import lombok.experimental.UtilityClass;
-
-import static com.simon.tea.Print.*;
 
 /**
+ * 扫描包路径，返回包中的所有类名
+ *
  * @author zhouzhenyong
  * @since 2018/7/15 下午5:31
  */
 public class PackageScanner {
+
     private String basePackage;
-    private ClassLoader cl;
     private TeaCup teaCup = TeaCup.getInstance();
 
+    /**
+     * @param basePackage com.simon.tea
+     */
     PackageScanner(String basePackage) {
         this.basePackage = basePackage;
-        this.cl = getClass().getClassLoader();
-        teaCup.loadPath(getRootPath(basePackage));
+        teaCup.read(getRootPath(basePackage));
     }
 
     List<String> scan() {
@@ -45,20 +40,24 @@ public class PackageScanner {
         return classes;
     }
 
-    Class<?> loadClass(String classFullName) throws ClassNotFoundException {
+    public Class<?> loadClass(String classFullName) throws ClassNotFoundException {
         return teaCup.loadClass(classFullName);
     }
 
     /**
      * com.simon.tea -> "/user/zzy/foo.jar"
      */
-    private String getRootPath(String basePackage){
-        return getJarPath(Objects.requireNonNull(cl.getResource(basePackage.replaceAll("\\.", "/"))));
+    private String getRootPath(String basePackage) {
+        return getRootPath(baseUrl(basePackage));
+    }
+
+    private URL baseUrl(String basePackage) {
+        return Objects.requireNonNull(getClass().getClassLoader()
+            .getResource(basePackage.replaceAll("\\.", "/")));
     }
 
     /**
-     * "file:/home/whf/cn/fh" -> "/home/whf/cn/fh"
-     * "jar:file:/home/whf/foo.jar!cn/fh" -> "/home/whf/foo.jar"
+     * "file:/home/whf/cn/fh" -> "/home/whf/cn/fh" "jar:file:/home/whf/foo.jar!cn/fh" -> "/home/whf/foo.jar"
      */
     private String getJarPath(URL url) {
         String fileUrl = url.getFile();
@@ -67,8 +66,13 @@ public class PackageScanner {
         if (-1 == pos) {
             return fileUrl;
         }
-
         return fileUrl.substring(5, pos);
+    }
+
+    private String getRootPath(URL url) {
+        String jarPath = getJarPath(url);
+        int end = jarPath.lastIndexOf('/');
+        return jarPath.substring(0, end);
     }
 
     /**
@@ -78,16 +82,16 @@ public class PackageScanner {
      */
     private List<String> doScan(String basePackage, List<String> nameList) throws IOException {
         String splashPath = basePackage.replaceAll("\\.", "/");
-
         List<String> names;
-        String filePath = getJarPath(Objects.requireNonNull(cl.getResource(splashPath)));
+        String filePath = getJarPath(baseUrl(basePackage));
+
         if (isJarFile(filePath)) {
             names = readFromJarFile(filePath, splashPath);
         } else {
             names = readFromDirectory(filePath);
         }
 
-        assert names != null;
+        assert names !=null;
         for (String name : names) {
             if (isClassFile(name)) {
                 nameList.add(toFullyQualifiedName(name, basePackage));
@@ -102,12 +106,13 @@ public class PackageScanner {
      * 将类名转换到全类名，如 String -> java.lang.String
      */
     private String toFullyQualifiedName(String shortName, String basePackage) {
-        return basePackage + '.' + StringUtil.trimExtension(basePackage, shortName);
+        return basePackage + '.' + trimExtension(basePackage, shortName);
     }
 
     /**
      * 从jar包里面读取对应的文件名列表
-     * @param jarPath               jar包名路径
+     *
+     * @param jarPath jar包名路径
      */
     private List<String> readFromJarFile(String jarPath, String splashedPackageName) throws IOException {
         JarInputStream jarIn = new JarInputStream(new FileInputStream(jarPath));
@@ -131,6 +136,27 @@ public class PackageScanner {
             return null;
         }
         return Arrays.asList(names);
+    }
+
+    /**
+     * 返回路径中的路径数据
+     *
+     * @param basePackage com.simon.tea
+     * @param name com/simon/tea/util/MapUtil.class
+     * @return util.MapUtil
+     */
+    public String trimExtension(String basePackage, String name) {
+        name = name.replaceAll("/", "\\.");
+        int endPos = name.lastIndexOf('.');
+        int startPos = basePackage.length();
+        if (-1 != endPos) {
+            if (name.startsWith(basePackage)) {
+                return name.substring(startPos + 1, endPos);
+            } else {
+                return name.substring(0, endPos);
+            }
+        }
+        return name;
     }
 
     private boolean isClassFile(String name) {

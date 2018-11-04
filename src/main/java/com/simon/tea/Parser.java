@@ -58,7 +58,7 @@ public class Parser {
         Set<Class<?>> classes = ClassUtil.getAnnotation("com.simon.tea", Module.class);
         classes.forEach(cls -> {
             Module module = cls.getAnnotation(Module.class);
-            if(module.visible()) {
+            if (module.visible()) {
                 cfgManager.addModule(module, parseCls(cls));
             }
         });
@@ -77,37 +77,38 @@ public class Parser {
         Arrays.stream(methods).forEach(method -> {
             Cmd cmd = method.getAnnotation(Cmd.class);
             Optional.ofNullable(cmd).map(c -> {
-                val handler = CmdHandler.builder().cmdEntity(CmdEntity.build(cmd)).handler(method).obj(finalClsObj).build();
+                val handler = CmdHandler.builder().cmdEntity(CmdEntity.build(cmd)).handler(method).obj(finalClsObj)
+                    .build();
                 cmdMap.putIfAbsent(c.value(), handler);
-                if(StringUtils.hasText(c.alias()) && !c.alias().contains(" ")){
+                if (StringUtils.hasText(c.alias()) && !c.alias().contains(" ")) {
                     cmdMap.putIfAbsent(c.alias(), handler);
                 }
                 return "";
             });
 
             Usage usage = method.getAnnotation(Usage.class);
-            Optional.ofNullable(usage).map(use->{
-                cmdMap.compute(use.target(), (k, v)->{
-                    if(null == v){
+            Optional.ofNullable(usage).map(use -> {
+                cmdMap.compute(use.target(), (k, v) -> {
+                    if (null == v) {
                         return CmdHandler.builder().usage(getUsageList(method, finalClsObj)).build();
-                    }else{
+                    } else {
                         v.setUsage(getUsageList(method, finalClsObj));
                     }
                     return v;
                 });
-               return "";
+                return "";
             });
         });
         return cmdMap;
     }
 
-    private List<Record> getUsageList(Method method, Object object){
+    private List<Record> getUsageList(Method method, Object object) {
         try {
             return Record.class.cast(method.invoke(object)).entrySet().stream()
                 .map(e -> Record.of("usage", e.getKey(), "detail", e.getValue()))
                 .collect(Collectors.toList());
         } catch (Exception e) {
-            showError("方法"+method.getName()+"的@Usage用法解析错误："+e.getLocalizedMessage());
+            showError("方法" + method.getName() + "的@Usage用法解析错误：" + e.getLocalizedMessage());
             return null;
         }
     }

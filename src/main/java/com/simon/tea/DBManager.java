@@ -104,11 +104,7 @@ public class DBManager {
      * 根据查询类型判断应该走哪个查询函数
      *
      * @param input sql 语句
-     * @return
-     * select a,b from xxx   返回 0
-     * select * from xxx     返回 0
-     * select c from xxx     返回 1
-     * 其他sql               返回 2
+     * @return select a,b from xxx   返回 0 select * from xxx     返回 0 select c from xxx     返回 1 其他sql               返回 2
      */
     public int judgeSqlType(String input) {
         String selectColumn = getSelectedColumn(input);
@@ -128,10 +124,7 @@ public class DBManager {
      * 根据查询类型判断应该走哪个查询函数
      *
      * @param input sql 语句
-     * @return
-     * select a,b from xxx  返回 a,b
-     * select * from xxx    返回 *
-     * select c from xxx    返回 c
+     * @return select a,b from xxx  返回 a,b select * from xxx    返回 * select c from xxx    返回 c
      */
     public String getSelectedColumn(String input) {
         if (input.startsWith("select")) {
